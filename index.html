@@ -3,70 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA MEGA ADM</title>
+    <title>SISTEMA MEGA ADM - MultiLoja</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --dark: #121417; --yellow: #ffcc00; --red: #ff4757; 
-            --green: #2ed573; --bg: #f1f3f6; --card: #ffffff;
+            --green: #2ed573; --blue: #3498db; --bg: #f1f3f6; --card: #ffffff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 50px; }
 
-        header { background: var(--dark); color: var(--yellow); padding: 15px; text-align: center; font-weight: 700; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        /* Seletor de Loja */
+        .store-selector { background: var(--dark); display: flex; padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 101; }
+        .store-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: #2a2e35; color: #888; transition: 0.3s; }
+        .store-btn.active { background: var(--yellow); color: var(--dark); }
+
+        header { background: #1c1f24; color: white; padding: 10px; text-align: center; font-size: 0.8rem; letter-spacing: 1px; }
         
-        /* Menu Funcionários */
-        .drawer { background: var(--dark); padding: 15px; border-bottom: 4px solid var(--yellow); }
-        .func-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
-        .func-chip { background: #2a2e35; color: white; padding: 12px 22px; border-radius: 30px; white-space: nowrap; cursor: pointer; transition: 0.3s; border: 2px solid transparent; font-size: 0.9rem; }
-        .func-chip.active { background: var(--yellow); color: var(--dark); font-weight: 700; transform: translateY(-3px); border-color: white; }
+        .drawer { background: #1c1f24; padding: 15px; border-bottom: 4px solid var(--yellow); }
+        .func-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; }
+        .func-chip { background: #2a2e35; color: white; padding: 10px 20px; border-radius: 30px; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
+        .func-chip.active { background: white; color: var(--dark); font-weight: 700; border-color: var(--yellow); }
 
-        .container { padding: 15px; max-width: 500px; margin: auto; animation: fadeInUp 0.4s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; }
 
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); }
-        h3 { margin: 0 0 15px 0; font-size: 1rem; color: #555; display: flex; align-items: center; gap: 8px; }
-
-        /* Inputs Modernos */
-        input { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #eee; border-radius: 12px; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--yellow); }
-
-        /* Seletor de Data Interativo */
+        input { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #eee; border-radius: 12px; font-size: 1rem; }
+        
         .date-selector { display: flex; gap: 10px; margin-bottom: 10px; }
         .day-input { width: 40% !important; text-align: center; }
         .month-toggle { flex-grow: 1; display: flex; background: #eee; border-radius: 12px; padding: 4px; }
-        .month-btn { flex: 1; border: none; border-radius: 10px; padding: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; background: transparent; }
+        .month-btn { flex: 1; border: none; border-radius: 10px; padding: 10px; font-weight: 600; cursor: pointer; background: transparent; }
         .month-btn.active.dez { background: var(--red); color: white; }
         .month-btn.active.jan { background: var(--green); color: white; }
 
-        /* Botões */
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn:active { transform: scale(0.98); }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
         .btn-add { background: var(--dark); color: var(--yellow); }
+        .btn-vale { background: var(--blue); color: white; }
         .btn-pay { background: var(--green); color: white; }
-        .btn-copy { background: #f0f0f0; color: #444; font-size: 0.85rem; margin-top: 15px; border: 1px dashed #ccc; }
 
-        /* Estilo da Lista */
-        .debt-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9; }
-        .badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 8px; font-weight: 700; text-transform: uppercase; }
+        .debt-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f9f9f9; }
+        .badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; margin-right: 5px; }
         .dez-bg { background: #ffe0e3; color: var(--red); }
         .jan-bg { background: #d4f8e2; color: #27ae60; }
-        .val-text { font-weight: 700; color: var(--red); }
+        
+        .tipo-tag { font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        .tag-compra { background: #eee; color: #666; }
+        .tag-vale { background: #e3f2fd; color: var(--blue); }
+        .tag-pgto { background: #e8f5e9; color: var(--green); }
 
-        .total-box { text-align: center; padding: 20px 0; }
-        .val-huge { font-size: 2.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
+        .val-text { font-weight: 700; }
+        .text-red { color: var(--red); }
+        .text-green { color: var(--green); }
+
+        .total-box { text-align: center; padding: 10px 0; }
+        .val-huge { font-size: 2.5rem; font-weight: 800; color: var(--dark); }
     </style>
 </head>
 <body>
 
-<header>SISTEMA MEGA ADM</header>
+<div class="store-selector">
+    <button id="btnMix" class="store-btn active" onclick="setLoja('Mega Mix')">MEGA MIX</button>
+    <button id="btnShow" class="store-btn" onclick="setLoja('Mega Show')">MEGA SHOW</button>
+</div>
+
+<header id="headerLoja">ESTAÇÃO: MEGA MIX</header>
 
 <div class="drawer">
     <div style="display: flex; gap: 10px;">
-        <input type="text" id="novoNome" placeholder="Nome do Funcionário..." style="margin:0; border:none;">
+        <input type="text" id="novoNome" placeholder="Novo Funcionário..." style="margin:0; border:none;">
         <button class="btn-add" onclick="addFuncionario()" style="width: 60px; border-radius: 12px;">+</button>
     </div>
     <div class="func-list" id="listaFunc"></div>
@@ -74,17 +83,17 @@
 
 <div class="container" id="painel" style="display: none;">
     <div class="total-box">
-        <span id="labelNome" style="font-weight: 700; color: var(--yellow); background: var(--dark); padding: 4px 12px; border-radius: 8px; font-size: 0.8rem;"></span>
+        <span id="labelNome" style="font-weight: 700; color: var(--yellow); background: var(--dark); padding: 4px 12px; border-radius: 8px;"></span>
         <div class="val-huge" id="totalGeral">R$ 0,00</div>
-        <button class="btn btn-copy" onclick="copiarAcesso()">🔗 Copiar Link + Senha</button>
+        <button onclick="copiarAcesso()" style="background:none; border:none; color:#888; text-decoration:underline; font-size:0.8rem; cursor:pointer;">🔗 Copiar Link de Acesso</button>
     </div>
 
     <div class="card">
-        <h3>Lançar Compra</h3>
-        <input type="text" id="motivo" placeholder="O que ele comprou?">
+        <h3>Lançamentos</h3>
+        <input type="text" id="motivo" placeholder="Motivo (Ex: Tênis ou Vale)">
         
         <div class="date-selector">
-            <input type="number" id="dia" class="day-input" placeholder="Dia" min="1" max="31">
+            <input type="number" id="dia" class="day-input" placeholder="Dia">
             <div class="month-toggle">
                 <button id="btnDez" class="month-btn dez active" onclick="setMonth('12')">DEZ</button>
                 <button id="btnJan" class="month-btn jan" onclick="setMonth('01')">JAN</button>
@@ -92,17 +101,20 @@
         </div>
 
         <input type="number" id="valor" placeholder="Valor R$">
-        <button class="btn btn-add" onclick="lancar()">Lançar na Planilha</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-add" style="flex:1" onclick="lancar('COMPRA')">🛒 COMPRA</button>
+            <button class="btn btn-vale" style="flex:1" onclick="lancar('VALE')">💵 VALE</button>
+        </div>
     </div>
 
     <div class="card">
-        <h3>Receber Pagamento</h3>
-        <input type="number" id="valorPago" placeholder="Quanto ele pagou?">
-        <button class="btn btn-pay" onclick="abater()">Confirmar Recebimento</button>
+        <h3>Pagamento</h3>
+        <input type="number" id="valorPago" placeholder="Valor recebido">
+        <button class="btn btn-pay" onclick="abater()">✅ REGISTRAR PAGAMENTO</button>
     </div>
 
     <div class="card">
-        <h3>Histórico</h3>
+        <h3>Extrato</h3>
         <div id="corpoTabela"></div>
     </div>
 </div>
@@ -120,10 +132,21 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    let lojaAtiva = "Mega Mix";
     let idAtivo = null;
     let nomeAtivo = "";
     let senhaAtiva = "";
     let mesSelecionado = "12";
+
+    function setLoja(loja) {
+        lojaAtiva = loja;
+        idAtivo = null;
+        document.getElementById('painel').style.display = 'none';
+        document.getElementById('headerLoja').innerText = "ESTAÇÃO: " + loja.toUpperCase();
+        document.getElementById('btnMix').classList.toggle('active', loja === 'Mega Mix');
+        document.getElementById('btnShow').classList.toggle('active', loja === 'Mega Show');
+        carregarFuncionarios();
+    }
 
     function setMonth(m) {
         mesSelecionado = m;
@@ -133,25 +156,28 @@
 
     function addFuncionario() {
         const n = document.getElementById('novoNome').value;
-        const senhaAleatoria = Math.floor(1000 + Math.random() * 9000); // Gera senha de 4 dígitos
-        if(n) db.ref('loja/funcionarios').push({ nome: n, senha: senhaAleatoria });
+        const senha = Math.floor(1000 + Math.random() * 9000);
+        if(n) db.ref('lojas/' + lojaAtiva + '/funcionarios').push({ nome: n, senha: senha });
         document.getElementById('novoNome').value = "";
     }
 
-    db.ref('loja/funcionarios').on('value', snap => {
-        const list = document.getElementById('listaFunc');
-        list.innerHTML = "";
-        snap.forEach(f => {
-            const isSel = idAtivo === f.key ? 'active' : '';
-            list.innerHTML += `<div class="func-chip ${isSel}" onclick="selecionar('${f.key}', '${f.val().nome}', '${f.val().senha}')">${f.val().nome}</div>`;
+    function carregarFuncionarios() {
+        db.ref('lojas/' + lojaAtiva + '/funcionarios').on('value', snap => {
+            const list = document.getElementById('listaFunc');
+            list.innerHTML = "";
+            snap.forEach(f => {
+                const isSel = idAtivo === f.key ? 'active' : '';
+                list.innerHTML += `<div class="func-chip ${isSel}" onclick="selecionar('${f.key}', '${f.val().nome}', '${f.val().senha}')">${f.val().nome}</div>`;
+            });
         });
-    });
+    }
 
     function selecionar(id, nome, senha) {
         idAtivo = id; nomeAtivo = nome; senhaAtiva = senha;
         document.getElementById('painel').style.display = 'block';
         document.getElementById('labelNome').innerText = nome + " (PIN: " + senha + ")";
-        db.ref('loja/funcionarios/'+id+'/dividas').on('value', snap => render(snap.val()));
+        db.ref('lojas/'+lojaAtiva+'/funcionarios/'+id+'/dividas').on('value', snap => render(snap.val()));
+        carregarFuncionarios();
     }
 
     function render(dividas) {
@@ -161,13 +187,17 @@
             Object.values(dividas).reverse().forEach(d => {
                 total += d.valor;
                 const cor = d.data.includes('/12') ? 'dez-bg' : 'jan-bg';
+                const tagClass = d.tipo === 'VALE' ? 'tag-vale' : (d.tipo === 'PGTO' ? 'tag-pgto' : 'tag-compra');
+                const valClass = d.valor < 0 ? 'text-green' : 'text-red';
+                
                 corpo.innerHTML += `
                     <div class="debt-row">
                         <div>
-                            <div style="font-weight:600; font-size:0.9rem">${d.motivo}</div>
                             <span class="badge ${cor}">${d.data}</span>
+                            <span class="tipo-tag ${tagClass}">${d.tipo}</span>
+                            <div style="font-weight:600; font-size:0.85rem; margin-top:3px">${d.motivo}</div>
                         </div>
-                        <div class="val-text">R$ ${d.valor.toFixed(2)}</div>
+                        <div class="val-text ${valClass}">R$ ${d.valor.toFixed(2)}</div>
                     </div>`;
             });
         }
@@ -175,33 +205,40 @@
         window.currentTotal = total;
     }
 
-    function lancar() {
+    function lancar(tipo) {
         const m = document.getElementById('motivo').value;
         const dia = document.getElementById('dia').value;
         const v = parseFloat(document.getElementById('valor').value);
         if(m && dia && v) {
-            const dataFormatada = dia.padStart(2, '0') + "/" + mesSelecionado;
-            db.ref('loja/funcionarios/'+idAtivo+'/dividas').push({motivo: m, data: dataFormatada, valor: v});
-            document.getElementById('motivo').value = "";
-            document.getElementById('valor').value = "";
-            document.getElementById('dia').value = "";
+            const dataF = dia.padStart(2, '0') + "/" + mesSelecionado;
+            db.ref('lojas/'+lojaAtiva+'/funcionarios/'+idAtivo+'/dividas').push({motivo: m, data: dataF, valor: v, tipo: tipo});
+            document.getElementById('motivo').value = ""; document.getElementById('valor').value = "";
         }
     }
 
     function abater() {
         const v = parseFloat(document.getElementById('valorPago').value);
         if(!v) return;
-        if(v >= window.currentTotal) db.ref('loja/funcionarios/'+idAtivo+'/dividas').remove();
-        else db.ref('loja/funcionarios/'+idAtivo+'/dividas').push({motivo: 'PAGAMENTO PARCIAL', data: 'Abate', valor: -v});
+        const dataH = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        
+        if(v >= window.currentTotal) {
+            if(confirm("Deseja limpar todo o histórico e zerar a dívida?")) {
+                db.ref('lojas/'+lojaAtiva+'/funcionarios/'+idAtivo+'/dividas').remove();
+            }
+        } else {
+            db.ref('lojas/'+lojaAtiva+'/funcionarios/'+idAtivo+'/dividas').push({motivo: 'PAGAMENTO PARCIAL', data: dataH, valor: -v, tipo: 'PGTO'});
+        }
         document.getElementById('valorPago').value = "";
     }
 
     function copiarAcesso() {
         const urlBase = "https://seusite.com/extrato.html"; 
-        const msg = `Olá ${nomeAtivo}, aqui está seu extrato atualizado:\n\n🔗 Link: ${urlBase}?id=${idAtivo}\n🔑 Sua Senha: ${senhaAtiva}`;
+        const msg = `Olá ${nomeAtivo}, seu extrato da loja ${lojaAtiva}:\n\n🔗 Link: ${urlBase}?loja=${lojaAtiva}&id=${idAtivo}\n🔑 PIN: ${senhaAtiva}`;
         navigator.clipboard.writeText(msg);
-        alert("Acesso copiado para o WhatsApp!");
+        alert("Copiado!");
     }
+
+    carregarFuncionarios();
 </script>
 </body>
 </html>
