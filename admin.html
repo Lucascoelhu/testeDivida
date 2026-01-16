@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SISTEMA MEGA ADM</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #121417; --a: #ffcc00; --r: #ff4757; --g: #2ed573; --b: #3498db; --bg: #f8f9fa; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 40px; }
+        .stores { display: flex; background: var(--p); padding: 8px; gap: 8px; position: sticky; top: 0; z-index: 100; }
+        .s-btn { flex: 1; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #2a2e35; color: #777; }
+        .s-btn.active { background: var(--a); color: var(--p); }
+        .drawer { background: #1c1f24; padding: 15px; border-bottom: 4px solid var(--a); }
+        .f-list { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; }
+        .f-chip { background: #2a2e35; color: #fff; padding: 10px 18px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; border: 2px solid transparent; cursor: pointer; }
+        .f-chip.active { background: #fff; color: var(--p); font-weight: 700; border-color: var(--a); }
+        .container { max-width: 480px; margin: auto; padding: 15px; }
+        .card { background: #fff; border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+        input, select { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #f1f1f1; border-radius: 16px; font-size: 1rem; background: #fafafa; }
+        .btn { border: none; border-radius: 16px; font-weight: 700; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; width: 100%; }
+        .b-dark { background: var(--p); color: var(--a); }
+        .b-vale { background: var(--b); color: #fff; flex: 1; }
+        .b-buy { background: var(--p); color: #fff; flex: 1; }
+        .b-pay { background: var(--g); color: #fff; }
+        .total-info { text-align: center; padding: 20px 0; }
+        .big-val { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; }
+        .row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f8f8f8; align-items: center; }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #eee; }
+    </style>
+</head>
+<body>
+
+<div class="stores">
+    <button id="m1" class="s-btn active" onclick="setLoja('Mega Mix', 'm1')">MEGA MIX</button>
+    <button id="m2" class="s-btn" onclick="setLoja('Mega Show', 'm2')">MEGA SHOW</button>
+</div>
+
+<div class="drawer">
+    <div style="display:flex; gap:10px; margin-bottom:10px">
+        <input type="text" id="nF" placeholder="Novo funcionário..." style="margin:0; padding:12px">
+        <button class="btn b-dark" onclick="addF()" style="width:50px; padding:0">+</button>
+    </div>
+    <div id="fList" class="f-list"></div>
+</div>
+
+<div class="container" id="main" style="display:none">
+    <div class="total-info">
+        <div id="curName" style="font-weight:700; color:#888"></div>
+        <div class="big-val" id="tG">R$ 0,00</div>
+        <button onclick="copyL()" style="background:none; border:none; color:var(--b); font-weight:600; font-size:0.8rem; cursor:pointer">🔗 Copiar link para WhatsApp</button>
+    </div>
+
+    <div class="card">
+        <h3 style="margin:0; font-size:1rem">Lançar Compra/Vale</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="dia" placeholder="Dia" style="flex: 1;">
+            <select id="mesRef" style="flex: 2;">
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+                <option value="03">Março</option><option value="04">Abril</option>
+                <option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option>
+                <option value="09">Setembro</option><option value="10">Outubro</option>
+                <option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+        </div>
+        <input type="text" id="mot" placeholder="Descrição">
+        <input type="number" id="val" placeholder="Valor R$">
+        <div style="display:flex; gap:10px; margin-top:10px">
+            <button class="btn b-buy" onclick="save('COMPRA')">🛒 COMPRA</button>
+            <button class="btn b-vale" onclick="save('VALE')">💵 VALE</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin:0; font-size:1rem">Pagamento</h3>
+        <input type="number" id="vP" placeholder="Valor recebido">
+        <button class="btn b-pay" onclick="pay()">REGISTRAR PAGAMENTO</button>
+    </div>
+
+    <div class="card">
+        <h3 style="margin:0 0 10px 0; font-size:1rem">Histórico</h3>
+        <div id="tab"></div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
+        authDomain: "teste-divida.firebaseapp.com",
+        databaseURL: "https://teste-divida-default-rtdb.firebaseio.com",
+        projectId: "teste-divida",
+        storageBucket: "teste-divida.firebasestorage.app",
+        messagingSenderId: "72737446721",
+        appId: "1:72737446721:web:9f179ee0812dc110bf5fc0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let loja = "Mega Mix", idA = null, nomeA = "";
+
+    function ajustarDataHoje() {
+        const hoje = new Date();
+        document.getElementById('dia').value = String(hoje.getDate()).padStart(2, '0');
+        document.getElementById('mesRef').value = String(hoje.getMonth() + 1).padStart(2, '0');
+    }
+
+    function setLoja(l, b) {
+        loja = l; idA = null;
+        document.querySelectorAll('.s-btn').forEach(x => x.classList.remove('active'));
+        document.getElementById(b).classList.add('active');
+        document.getElementById('main').style.display = 'none';
+        loadF();
+    }
+
+    function addF() {
+        const n = document.getElementById('nF').value;
+        if(n) db.ref(`lojas/${loja}/funcionarios`).push({ nome: n });
+        document.getElementById('nF').value = "";
+    }
+
+    function loadF() {
+        db.ref(`lojas/${loja}/funcionarios`).on('value', s => {
+            const list = document.getElementById('fList');
+            list.innerHTML = "";
+            s.forEach(f => {
+                const active = idA === f.key ? 'active' : '';
+                list.innerHTML += `<div class="f-chip ${active}" onclick="sel('${f.key}', '${f.val().nome}')">${f.val().nome}</div>`;
+            });
+        });
+    }
+
+    function sel(id, n) {
+        idA = id; nomeA = n;
+        document.getElementById('main').style.display = 'block';
+        document.getElementById('curName').innerText = n.toUpperCase();
+        ajustarDataHoje();
+        db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => render(s.val()));
+        loadF();
+    }
+
+    function render(d) {
+        const tab = document.getElementById('tab');
+        let t = 0; tab.innerHTML = "";
+        if(d) {
+            Object.values(d).reverse().forEach(x => {
+                t += x.valor;
+                tab.innerHTML += `<div class="row"><div><span class="badge">${x.data}</span><div style="font-weight:600; font-size:0.8rem">${x.motivo}</div></div><div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}">R$ ${Math.abs(x.valor).toFixed(2)}</div></div>`;
+            });
+        }
+        document.getElementById('tG').innerText = t.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
+        window.total = t;
+    }
+
+    function save(tipo) {
+        const m = document.getElementById('mot').value, d = document.getElementById('dia').value, v = parseFloat(document.getElementById('val').value), mesSel = document.getElementById('mesRef').value;
+        if(m && d && v) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:m, data:d.padStart(2,'0')+'/'+mesSel, valor:v, tipo:tipo});
+            document.getElementById('mot').value = ""; document.getElementById('val').value = "";
+        }
+    }
+
+    function pay() {
+        const v = parseFloat(document.getElementById('vP').value);
+        if(!v) return;
+        const dataH = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO', data:dataH, valor:-v, tipo:'PGTO'});
+        document.getElementById('vP').value = "";
+    }
+
+    function copyL() {
+        const link = `${window.location.href.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
+        navigator.clipboard.writeText(`Olá ${nomeA}, seu extrato da ${loja}:\n🔗 ${link}`);
+        alert("Link copiado!");
+    }
+    loadF();
+</script>
+</body>
+</html>
