@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MEGA ADM - ELITE</title>
+    <title>MEGA ADM ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #2563eb; --bg: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 50px; }
         .stores { display: flex; background: var(--p); padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 100; }
         .s-btn { flex: 1; border: none; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.7rem; cursor: pointer; background: #1e293b; color: #64748b; text-transform: uppercase; }
@@ -32,7 +32,7 @@
         input, select { width: 100%; padding: 16px; margin: 6px 0; border: 2px solid #f1f5f9; border-radius: 18px; font-size: 1rem; background: #f8fafc; }
         .shortcuts-container { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .tag-btn { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 14px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
-        .btn { border: none; border-radius: 18px; font-weight: 800; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn { border: none; border-radius: 18px; font-weight: 800; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .b-dark { background: var(--p); color: #fff; }
         .b-pay { background: var(--g); color: #fff; width: 100%; margin-top: 10px; }
         .row { display: flex; justify-content: space-between; padding: 18px; border-radius: 22px; margin-bottom: 12px; background: #fff; border: 1px solid #f1f5f9; align-items: center; }
@@ -59,7 +59,7 @@
 <div class="container" id="main" style="display:none">
     <div style="text-align:center; padding: 20px 0;">
         <div id="curName" style="font-weight:800; color:#94a3b8; text-transform: uppercase; font-size: 0.75rem"></div>
-        <div style="font-size: 3.8rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
+        <div style="font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
         
         <div class="soma-box">
             <button class="soma-btn active" id="btnG" onclick="filtrarSoma('geral', this)">SOMA TOTAL</button>
@@ -82,9 +82,10 @@
         <div style="display: flex; gap: 10px;">
             <input type="number" id="dia" placeholder="Dia" inputmode="numeric">
             <select id="mesRef">
-                <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
-                <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
-                <option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
             </select>
         </div>
         <div class="shortcuts-container" id="shortcutBox"></div>
@@ -102,10 +103,8 @@
 </div>
 
 <script>
-    // ==========================================
-    // ESCREVA SEU LINK NO LUGAR DO EXEMPLO ABAIXO:
-    const SEU_LINK_BASE = "https://lucascoelhu.github.io/testeDivida/extrato.html"; 
-    // ==========================================
+    // PEGA O LINK DO GITHUB AUTOMATICAMENTE
+    const LINK_GITHUB = window.location.href.split('admin.html')[0];
 
     const firebaseConfig = {
         apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
@@ -148,7 +147,9 @@
         document.getElementById('main').style.display = 'block';
         document.getElementById('curName').innerText = n;
         document.getElementById('txtPin').innerText = pin;
-        ajustarData();
+        const h = new Date();
+        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
+        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => render(s.val()));
         loadF();
     }
@@ -169,26 +170,27 @@
             });
             itens.reverse().forEach(x => {
                 let rowClass = x.tipo === 'VALE' ? "row-vale" : (x.valor < 0 ? "row-pgto" : "");
-                tab.innerHTML += `<div class="row ${rowClass}"><div style="flex:1"><span class="badge">${x.data}</span><div style="font-weight:700;font-size:0.9rem">${x.motivo}</div></div><div style="font-weight:800;color:${x.valor<0?'var(--g)':'var(--r)'}">R$ ${Math.abs(x.valor).toFixed(2)}</div><button class="btn-del" style="margin-left:15px" onclick="deletarItem('${x.key}')">×</button></div>`;
+                tab.innerHTML += `<div class="row ${rowClass}"><div style="flex:1"><span style="font-size:0.6rem;font-weight:800;color:#94a3b8">${x.data}</span><div style="font-weight:700;font-size:0.9rem">${x.motivo}</div></div><div style="font-weight:800;color:${x.valor<0?'var(--g)':'var(--r)'}">R$ ${Math.abs(x.valor).toFixed(2)}</div><button class="btn-del" style="margin-left:15px" onclick="deletarItem('${x.key}')">×</button></div>`;
             });
         }
         sG = sC + sV + sP; sC = sC + sP;
         filtrarSoma(currentFilter, document.getElementById(currentFilter === 'geral' ? 'btnG' : (currentFilter === 'compra' ? 'btnC' : 'btnV')));
+        
         grid.innerHTML = "";
         const mesesOrd = Object.keys(gastosMes).sort();
         const ultimos = mesesOrd.slice(-2);
         ultimos.forEach((m, idx) => {
             const estilo = (idx === 0 && ultimos.length > 1) ? 'mes-antigo' : 'mes-atual';
-            grid.innerHTML += `<div class="dash-item ${estilo}"><span class="dash-label">${mesesNomes[m] || 'Mês '+m}</span><div class="dash-val">R$ ${gastosMes[m].toFixed(2)}</div></div>`;
+            grid.innerHTML += `<div class="dash-item ${estilo}"><span class="dash-label">${mesesNomes[m] || m}</span><div class="dash-val">R$ ${gastosMes[m].toFixed(2)}</div></div>`;
         });
     }
 
     function pay() {
         const v = parseFloat(document.getElementById('val').value), d = document.getElementById('dia').value, mes = document.getElementById('mesRef').value;
-        if(!v) return alert("Digite o valor");
-        const mesAbater = prompt("Abatendo qual mês?", mes);
-        if(mesAbater) {
-            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:`ABATIMENTO MÊS ${mesAbater}`, data:d.padStart(2,'0')+'/'+mes, valor:-v, tipo:'PGTO'});
+        if(!v) return;
+        const mAbate = prompt("Abatendo qual mês?", mes);
+        if(mAbate) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:`ABATIMENTO MÊS ${mAbate}`, data:d.padStart(2,'0')+'/'+mes, valor:-v, tipo:'PGTO'});
             document.getElementById('val').value = "";
         }
     }
@@ -197,31 +199,24 @@
         currentFilter = tipo;
         document.querySelectorAll('.soma-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        let valorFinal = (tipo === 'geral') ? sG : (tipo === 'compra' ? sC : sV);
-        document.getElementById('tG').innerText = valorFinal.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
+        let v = (tipo === 'geral') ? sG : (tipo === 'compra' ? sC : sV);
+        document.getElementById('tG').innerText = v.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
     }
 
-    function save(tipo) {
+    function save(t) {
         let m = document.getElementById('mot').value;
         const d = document.getElementById('dia').value, v = parseFloat(document.getElementById('val').value), mes = document.getElementById('mesRef').value;
-        if(tipo === 'VALE') m = "VALE";
+        if(t === 'VALE') m = "VALE";
         if(m && d && v) {
-            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:m, data:d.padStart(2,'0')+'/'+mes, valor:v, tipo:tipo});
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:m, data:d.padStart(2,'0')+'/'+mes, valor:v, tipo:t});
             document.getElementById('mot').value = ""; document.getElementById('val').value = "";
         }
     }
 
     function copyL() {
-        // Gera o link usando a URL base que você definiu no topo do script
-        const link = `${SEU_LINK_BASE}/extrato.html?loja=${encodeURIComponent(loja)}&id=${idA}`;
-        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato foi atualizado:\n🔗 ${link}\n\nPIN: *${pinA}*`);
+        const link = `${LINK_GITHUB}extrato.html?loja=${encodeURIComponent(loja)}&id=${idA}`;
+        const msg = encodeURIComponent(`Olá ${nomeA}! Extrato atualizado:\n🔗 ${link}\n\nPIN: *${pinA}*`);
         window.open(`https://wa.me/?text=${msg}`, '_blank');
-    }
-
-    function ajustarData() {
-        const h = new Date();
-        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
-        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
     }
 
     function addF() {
@@ -229,13 +224,11 @@
         if(n) db.ref(`lojas/${loja}/funcionarios`).push({ nome: n, pin: pin });
         document.getElementById('nF').value = "";
     }
-
     function deletarItem(k) { if(confirm("Apagar?")) db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${k}`).remove(); }
     function loadShortcuts() {
         const box = document.getElementById('shortcutBox');
-        box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="setDesc('${s}')">${s}</button>`).join('') + `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
+        box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="document.getElementById('mot').value='${s}'">${s}</button>`).join('') + `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
     }
-    function setDesc(txt) { document.getElementById('mot').value = txt; }
     function addShortcut() {
         const n = prompt("Novo atalho:");
         if(n) { shortcuts.push(n); localStorage.setItem('myShortcuts', JSON.stringify(shortcuts)); loadShortcuts(); }
