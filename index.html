@@ -3,56 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MEGA ADM ELITE v5</title>
+    <title>MEGA ADM - ABATIMENTO POR MÊS</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #3b82f6; --bg: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 40px; }
+        :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #2563eb; --bg: #f8fafc; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 50px; }
 
-        .stores { display: flex; background: var(--p); padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 100; }
-        .s-btn { flex: 1; border: none; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #1e293b; color: #64748b; }
+        /* Estilo original mantido */
+        .stores { display: flex; background: var(--p); padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 100; }
+        .s-btn { flex: 1; border: none; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.7rem; cursor: pointer; background: #1e293b; color: #64748b; text-transform: uppercase; }
         .s-btn.active { background: var(--a); color: var(--p); }
-
         .drawer { background: #1e293b; padding: 20px; border-bottom: 4px solid var(--a); }
         .f-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .f-chip { background: #334155; color: #f8fafc; padding: 12px 20px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .f-chip { background: #334155; color: #f8fafc; padding: 12px 22px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .f-chip.active { background: #fff; color: var(--p); border-color: var(--a); }
-
-        .container { max-width: 500px; margin: auto; padding: 20px; }
-        
-        .dash-row { display: flex; gap: 12px; margin-bottom: 24px; }
-        .dash-item { flex: 1; padding: 18px; border-radius: 24px; text-align: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .mes-antigo { background: linear-gradient(135deg, #64748b, #334155); }
-        .mes-atual { background: linear-gradient(135deg, var(--p), #1e293b); border-bottom: 4px solid var(--a); }
-        .dash-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; opacity: 0.8; display: block; }
-        .dash-val { font-size: 1.1rem; font-weight: 800; }
-
-        .card { background: #fff; border-radius: 28px; padding: 24px; margin-bottom: 24px; border: 1px solid #f1f5f9; }
-        input, select { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 18px; font-size: 1rem; outline: none; }
-
-        .shortcuts-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; scrollbar-width: none; }
-        .tag-btn { background: #f1f5f9; border: none; padding: 10px 16px; border-radius: 14px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-
-        .btn { border: none; border-radius: 18px; font-weight: 700; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .dash-row { display: flex; gap: 12px; margin-bottom: 20px; }
+        .dash-item { flex: 1; padding: 16px; border-radius: 24px; text-align: center; color: white; }
+        .mes-antigo { background: #475569; opacity: 0.8; }
+        .mes-atual { background: var(--p); border-bottom: 4px solid var(--a); }
+        .dash-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; opacity: 0.7; display: block; }
+        .dash-val { font-size: 1rem; font-weight: 800; }
+        .soma-box { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; }
+        .soma-btn { border: 1px solid #e2e8f0; background: #fff; padding: 8px 12px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; color: #64748b; cursor: pointer; }
+        .soma-btn.active { border-color: var(--a); background: var(--p); color: #fff; }
+        .card { background: #fff; border-radius: 30px; padding: 20px; margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        input, select { width: 100%; padding: 16px; margin: 6px 0; border: 2px solid #f1f5f9; border-radius: 18px; font-size: 1rem; background: #f8fafc; }
+        .shortcuts-container { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .tag-btn { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 14px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .btn { border: none; border-radius: 18px; font-weight: 800; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .b-dark { background: var(--p); color: #fff; }
         .b-pay { background: var(--g); color: #fff; width: 100%; margin-top: 10px; }
-
-        .row { display: flex; justify-content: space-between; padding: 18px; border-radius: 20px; margin-bottom: 12px; background: #fff; border: 1px solid #f1f5f9; align-items: center; }
+        .row { display: flex; justify-content: space-between; padding: 18px; border-radius: 22px; margin-bottom: 12px; background: #fff; border: 1px solid #f1f5f9; align-items: center; }
         .row-vale { border-left: 6px solid var(--b); background: #eff6ff; }
         .row-pgto { border-left: 6px solid var(--g); background: #f0fdf4; }
-        
-        .badge { font-size: 0.65rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; background: rgba(0,0,0,0.05); color: #475569; }
-        .btn-del { background: #fee2e2; color: var(--r); border: none; width: 34px; height: 34px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--p); color: #fff; padding: 12px 25px; border-radius: 50px; font-weight: 600; display: none; z-index: 1000; }
+        .btn-del { background: #fee2e2; color: var(--r); border: none; width: 36px; height: 36px; border-radius: 12px; font-weight: 800; }
     </style>
 </head>
 <body>
-
-<div id="toast">Enviando para WhatsApp... 🚀</div>
 
 <div class="stores">
     <button id="m1" class="s-btn active" onclick="setLoja('Mega Mix', 'm1')">MEGA MIX</button>
@@ -68,16 +59,21 @@
 </div>
 
 <div class="container" id="main" style="display:none">
-    <div style="text-align:center; padding: 25px 0;">
-        <div id="curName" style="font-weight:800; color:#94a3b8; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem"></div>
-        <div style="font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
+    <div style="text-align:center; padding: 20px 0;">
+        <div id="curName" style="font-weight:800; color:#94a3b8; text-transform: uppercase; font-size: 0.75rem"></div>
+        <div style="font-size: 3.8rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
         
-        <div id="pinDisplay" style="background:#fff; border: 1px solid #eee; display:inline-block; padding: 10px 20px; border-radius: 15px; margin-top: 10px;">
-            <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8;">PIN DE ACESSO:</span>
-            <span id="txtPin" style="font-weight: 800; color: var(--p); margin-left: 5px;">----</span>
+        <div class="soma-box">
+            <button class="soma-btn active" id="btnG" onclick="filtrarSoma('geral', this)">SOMA TOTAL</button>
+            <button class="soma-btn" id="btnC" onclick="filtrarSoma('compra', this)">COMPRAS (ABATIDO)</button>
+            <button class="soma-btn" id="btnV" onclick="filtrarSoma('vale', this)">SOMA VALES</button>
+        </div>
+
+        <div style="background:#fff; border: 1px solid #e2e8f0; display:inline-block; padding: 10px 20px; border-radius: 16px;">
+            <span style="font-size: 0.65rem; font-weight: 800; color: #94a3b8;">PIN: <span id="txtPin" style="color:var(--p)">----</span></span>
         </div>
         <br>
-        <button onclick="copyL()" style="background:var(--g); border:none; color:#fff; font-weight:700; font-size:0.75rem; padding: 12px 24px; border-radius: 50px; cursor:pointer; margin-top:15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+        <button onclick="copyL()" style="background:var(--g); border:none; color:#fff; font-weight:800; font-size:0.75rem; padding: 14px 28px; border-radius: 50px; cursor:pointer; margin-top:15px">
             🟢 ENVIAR PARA O WHATSAPP
         </button>
     </div>
@@ -86,19 +82,18 @@
 
     <div class="card">
         <div style="display: flex; gap: 10px;">
-            <input type="number" id="dia" placeholder="Dia">
+            <input type="number" id="dia" placeholder="Dia" inputmode="numeric">
             <select id="mesRef">
-                <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-                <option value="03">Março</option><option value="04">Abril</option>
-                <option value="05">Maio</option><option value="06">Junho</option>
-                <option value="07">Julho</option><option value="08">Agosto</option>
-                <option value="09">Setembro</option><option value="10">Outubro</option>
-                <option value="11">Novembro</option><option value="12">Dezembro</option>
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
             </select>
         </div>
         <div class="shortcuts-container" id="shortcutBox"></div>
-        <input type="text" id="mot" placeholder="Descrição">
-        <input type="number" id="val" placeholder="Valor R$">
+        <input type="text" id="mot" placeholder="Descrição (Compras)">
+        <input type="number" id="val" placeholder="Valor R$" inputmode="decimal">
+        
         <div style="display:flex; gap:12px; margin-top:10px">
             <button class="btn b-dark" style="flex:1" onclick="save('COMPRA')">🛒 COMPRA</button>
             <button class="btn" style="flex:1; background:var(--b); color:#fff" onclick="save('VALE')">💵 VALE</button>
@@ -110,7 +105,6 @@
 </div>
 
 <script>
-    // CREDENCIAIS JÁ INSERIDAS
     const firebaseConfig = {
         apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
         authDomain: "teste-divida.firebaseapp.com",
@@ -123,20 +117,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let loja = "Mega Mix", idA = null, nomeA = "", pinA = "";
-    let shortcuts = JSON.parse(localStorage.getItem('myShortcuts')) || ["Compras", "Suco", "Doce", "Refri", "Marmita"];
+    let loja = "Mega Mix", idA = null, nomeA = "", pinA = "", currentFilter = 'geral';
+    let sG = 0, sC = 0, sV = 0;
+    let shortcuts = JSON.parse(localStorage.getItem('myShortcuts')) || ["Suco", "Doce", "Refri", "Marmita"];
     const mesesNomes = { "01":"Jan","02":"Fev","03":"Mar","04":"Abr","05":"Mai","06":"Jun","07":"Jul","08":"Ago","09":"Set","10":"Out","11":"Nov","12":"Dez" };
-
-    function loadShortcuts() {
-        const box = document.getElementById('shortcutBox');
-        box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="setDesc('${s}')">${s}</button>`).join('') + 
-                       `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
-    }
-    function setDesc(txt) { document.getElementById('mot').value = txt; }
-    function addShortcut() {
-        const n = prompt("Novo atalho:");
-        if(n) { shortcuts.push(n); localStorage.setItem('myShortcuts', JSON.stringify(shortcuts)); loadShortcuts(); }
-    }
 
     function setLoja(l, b) {
         loja = l; idA = null;
@@ -162,9 +146,7 @@
         document.getElementById('main').style.display = 'block';
         document.getElementById('curName').innerText = n;
         document.getElementById('txtPin').innerText = pin;
-        const h = new Date();
-        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
-        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
+        ajustarData();
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => render(s.val()));
         loadF();
     }
@@ -172,79 +154,97 @@
     function render(d) {
         const tab = document.getElementById('tab');
         const grid = document.getElementById('mesesGrid');
-        let tGeral = 0; let gastosMes = {};
+        sG = 0; sC = 0; sV = 0; let sP = 0; let gastosMes = {};
         tab.innerHTML = "";
-
         if(d) {
             const itens = Object.keys(d).map(k => ({...d[k], key: k}));
-            itens.forEach(x => {
-                tGeral += x.valor;
-                const mes = x.data.split('/')[1];
-                gastosMes[mes] = (gastosMes[mes] || 0) + x.valor;
+            itens.forEach(x => { 
+                if(x.tipo === 'COMPRA') sC += x.valor;
+                if(x.tipo === 'VALE') sV += x.valor;
+                if(x.valor < 0) sP += x.valor; 
+                const mes = x.data.split('/')[1]; 
+                gastosMes[mes] = (gastosMes[mes] || 0) + x.valor; 
             });
-
             itens.reverse().forEach(x => {
                 let rowClass = x.tipo === 'VALE' ? "row-vale" : (x.valor < 0 ? "row-pgto" : "");
-                tab.innerHTML += `
-                <div class="row ${rowClass}">
-                    <div style="flex:1">
-                        <span class="badge">${x.data}</span>
-                        <div style="font-weight:700; font-size:0.9rem">${x.motivo}</div>
-                    </div>
-                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:15px">
-                        R$ ${Math.abs(x.valor).toFixed(2)}
-                    </div>
-                    <button class="btn-del" onclick="deletarItem('${x.key}')">×</button>
-                </div>`;
+                tab.innerHTML += `<div class="row ${rowClass}"><div style="flex:1"><span class="badge">${x.data}</span><div style="font-weight:700;font-size:0.9rem">${x.motivo}</div></div><div style="font-weight:800;color:${x.valor<0?'var(--g)':'var(--r)'}">R$ ${Math.abs(x.valor).toFixed(2)}</div><button class="btn-del" style="margin-left:15px" onclick="deletarItem('${x.key}')">×</button></div>`;
             });
         }
-
+        sG = sC + sV + sP; sC = sC + sP;
+        filtrarSoma(currentFilter, document.getElementById(currentFilter === 'geral' ? 'btnG' : (currentFilter === 'compra' ? 'btnC' : 'btnV')));
+        
         grid.innerHTML = "";
         const mesesOrd = Object.keys(gastosMes).sort();
         const ultimos = mesesOrd.slice(-2);
         ultimos.forEach((m, idx) => {
             const estilo = (idx === 0 && ultimos.length > 1) ? 'mes-antigo' : 'mes-atual';
-            grid.innerHTML += `
-                <div class="dash-item ${estilo}">
-                    <span class="dash-label">${mesesNomes[m]}</span>
-                    <div class="dash-val">R$ ${gastosMes[m].toFixed(2)}</div>
-                </div>`;
+            grid.innerHTML += `<div class="dash-item ${estilo}"><span class="dash-label">${mesesNomes[m] || 'Mês '+m}</span><div class="dash-val">R$ ${gastosMes[m].toFixed(2)}</div></div>`;
         });
-        document.getElementById('tG').innerText = tGeral.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
     }
 
-    function addF() {
-        const n = document.getElementById('nF').value;
-        const pin = Math.floor(1000 + Math.random() * 9000).toString();
-        if(n) db.ref(`lojas/${loja}/funcionarios`).push({ nome: n, pin: pin });
-        document.getElementById('nF').value = "";
+    function pay() {
+        const v = parseFloat(document.getElementById('val').value), d = document.getElementById('dia').value, mes = document.getElementById('mesRef').value;
+        if(!v) return alert("Digite o valor do abatimento");
+        
+        const mesAbater = prompt("Qual mês você está abatendo? (Ex: 01 para Janeiro, 02 para Fevereiro...)", mes);
+        if(mesAbater) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({
+                motivo: `ABATIMENTO MÊS ${mesAbater}`, 
+                data: d.padStart(2,'0')+'/'+mes, 
+                valor: -v, 
+                tipo: 'PGTO'
+            });
+            document.getElementById('val').value = "";
+        }
+    }
+
+    function filtrarSoma(tipo, btn) {
+        currentFilter = tipo;
+        document.querySelectorAll('.soma-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        let valorFinal = (tipo === 'geral') ? sG : (tipo === 'compra' ? sC : sV);
+        document.getElementById('tG').innerText = valorFinal.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
     }
 
     function save(tipo) {
-        const m = document.getElementById('mot').value, d = document.getElementById('dia').value, v = parseFloat(document.getElementById('val').value), mes = document.getElementById('mesRef').value;
+        let m = document.getElementById('mot').value;
+        const d = document.getElementById('dia').value, v = parseFloat(document.getElementById('val').value), mes = document.getElementById('mesRef').value;
+        if(tipo === 'VALE') m = "VALE";
         if(m && d && v) {
             db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:m, data:d.padStart(2,'0')+'/'+mes, valor:v, tipo:tipo});
             document.getElementById('mot').value = ""; document.getElementById('val').value = "";
         }
     }
 
-    function pay() {
-        const v = parseFloat(document.getElementById('val').value);
-        const d = document.getElementById('dia').value, mes = document.getElementById('mesRef').value;
-        if(v) {
-            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO', data:d.padStart(2,'0')+'/'+mes, valor:-v, tipo:'PGTO'});
-            document.getElementById('val').value = "";
-        }
+    function ajustarData() {
+        const h = new Date();
+        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
+        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
+    }
+
+    function addF() {
+        const n = document.getElementById('nF').value, pin = Math.floor(1000 + Math.random() * 9000).toString();
+        if(n) db.ref(`lojas/${loja}/funcionarios`).push({ nome: n, pin: pin });
+        document.getElementById('nF').value = "";
     }
 
     function deletarItem(k) { if(confirm("Apagar?")) db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${k}`).remove(); }
     
     function copyL() {
         const link = `${window.location.origin}${window.location.pathname.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
-        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato atualizado:\n🔗 ${link}\n\nSua senha (PIN): *${pinA}*`);
+        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato foi atualizado com o abatimento.\n🔗 ${link}\n\nPIN: *${pinA}*`);
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
+    function loadShortcuts() {
+        const box = document.getElementById('shortcutBox');
+        box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="setDesc('${s}')">${s}</button>`).join('') + `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
+    }
+    function setDesc(txt) { document.getElementById('mot').value = txt; }
+    function addShortcut() {
+        const n = prompt("Novo atalho:");
+        if(n) { shortcuts.push(n); localStorage.setItem('myShortcuts', JSON.stringify(shortcuts)); loadShortcuts(); }
+    }
     loadShortcuts(); loadF();
 </script>
 </body>
