@@ -3,59 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MEGA ADM ELITE</title>
+    <title>MEGA ADM ELITE v5</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #3b82f6; --bg: #f8fafc; --card: #ffffff; }
+        :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #3b82f6; --bg: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 40px; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-up { animation: slideUp 0.4s ease-out; }
-
-        /* Navbar Lojas */
         .stores { display: flex; background: var(--p); padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 100; }
-        .s-btn { flex: 1; border: none; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #1e293b; color: #64748b; transition: 0.3s; }
-        .s-btn.active { background: var(--a); color: var(--p); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+        .s-btn { flex: 1; border: none; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #1e293b; color: #64748b; }
+        .s-btn.active { background: var(--a); color: var(--p); }
 
-        /* Lista de Funcionários */
-        .drawer { background: #1e293b; padding: 15px; border-bottom: 4px solid var(--a); }
-        .f-list { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
-        .f-chip { background: #334155; color: #f8fafc; padding: 10px 18px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-        .f-chip.active { background: #fff; color: var(--p); border-color: var(--a); transform: scale(1.05); }
+        .drawer { background: #1e293b; padding: 20px; border-bottom: 4px solid var(--a); }
+        .f-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .f-chip { background: #334155; color: #f8fafc; padding: 12px 20px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .f-chip.active { background: #fff; color: var(--p); border-color: var(--a); }
 
-        .container { max-width: 500px; margin: auto; padding: 15px; }
-        .card { background: var(--card); border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+        .container { max-width: 500px; margin: auto; padding: 20px; }
         
-        input, select { width: 100%; padding: 14px; margin: 6px 0; border: 2px solid #f1f5f9; border-radius: 16px; font-size: 1rem; background: #f8fafc; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--a); background: #fff; }
+        .dash-row { display: flex; gap: 12px; margin-bottom: 24px; }
+        .dash-item { flex: 1; padding: 18px; border-radius: 24px; text-align: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .mes-antigo { background: linear-gradient(135deg, #64748b, #334155); }
+        .mes-atual { background: linear-gradient(135deg, var(--p), #1e293b); border-bottom: 4px solid var(--a); }
+        .dash-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; opacity: 0.8; display: block; }
+        .dash-val { font-size: 1.1rem; font-weight: 800; }
 
-        /* Atalhos Rápidos */
-        .shortcuts-label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; margin: 10px 0 5px 5px; display: block; }
-        .shortcuts-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-bottom: 5px; scrollbar-width: none; }
-        .tag-btn { background: #f1f5f9; color: #475569; border: none; padding: 8px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-        .tag-btn:hover { background: #e2e8f0; }
-        .tag-add { background: var(--p); color: var(--a); font-size: 1rem; padding: 6px 15px; }
+        .card { background: #fff; border-radius: 28px; padding: 24px; margin-bottom: 24px; border: 1px solid #f1f5f9; }
+        input, select { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 18px; font-size: 1rem; outline: none; }
 
-        .btn { border: none; border-radius: 18px; font-weight: 700; cursor: pointer; padding: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; transition: 0.2s; }
-        .b-vale { background: var(--b); color: #fff; flex: 1; }
-        .b-buy { background: var(--p); color: #fff; flex: 1; }
-        .b-pay { background: var(--g); color: #fff; margin-top: 10px; }
+        .shortcuts-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; scrollbar-width: none; }
+        .tag-btn { background: #f1f5f9; border: none; padding: 10px 16px; border-radius: 14px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
-        .total-info { text-align: center; padding: 20px 0; }
-        .big-val { font-size: 3rem; font-weight: 800; letter-spacing: -2px; }
+        .btn { border: none; border-radius: 18px; font-weight: 700; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .b-dark { background: var(--p); color: #fff; }
+        .b-pay { background: var(--g); color: #fff; width: 100%; margin-top: 10px; }
+
+        .row { display: flex; justify-content: space-between; padding: 18px; border-radius: 20px; margin-bottom: 12px; background: #fff; border: 1px solid #f1f5f9; align-items: center; }
+        .row-vale { border-left: 6px solid var(--b); background: #eff6ff; }
+        .row-pgto { border-left: 6px solid var(--g); background: #f0fdf4; }
         
-        .row { display: flex; justify-content: space-between; padding: 14px; border-radius: 16px; margin-bottom: 8px; background: #fff; border: 1px solid #f1f5f9; align-items: center; }
-        .btn-del { background: #fee2e2; color: var(--r); border: none; width: 30px; height: 30px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; background: rgba(0,0,0,0.05); color: #475569; }
+        .btn-del { background: #fee2e2; color: var(--r); border: none; width: 34px; height: 34px; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--p); color: #fff; padding: 12px 25px; border-radius: 50px; font-size: 0.8rem; display: none; z-index: 1000; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--p); color: #fff; padding: 12px 25px; border-radius: 50px; font-weight: 600; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div id="toast">Link copiado! 🚀</div>
+<div id="toast">Enviando para WhatsApp... 🚀</div>
 
 <div class="stores">
     <button id="m1" class="s-btn active" onclick="setLoja('Mega Mix', 'm1')">MEGA MIX</button>
@@ -63,26 +60,34 @@
 </div>
 
 <div class="drawer">
-    <div style="display:flex; gap:10px; margin-bottom:10px">
-        <input type="text" id="nF" placeholder="Novo funcionário..." style="margin:0; padding:12px">
-        <button class="btn" style="width:50px; background:var(--p); color:var(--a)" onclick="addF()">＋</button>
+    <div style="display:flex; gap:12px; margin-bottom:12px">
+        <input type="text" id="nF" placeholder="Novo funcionário..." style="margin:0">
+        <button class="btn b-dark" onclick="addF()" style="width:60px; border-radius: 15px">＋</button>
     </div>
     <div id="fList" class="f-list"></div>
 </div>
 
-<div class="container animate-up" id="main" style="display:none">
-    <div class="total-info">
-        <div id="curName" style="font-weight:700; color:#94a3b8; font-size:0.8rem; text-transform:uppercase"></div>
-        <div class="big-val" id="tG">R$ 0,00</div>
-        <button onclick="copyL()" style="background:rgba(59,130,246,0.1); border:none; color:var(--b); font-weight:700; font-size:0.7rem; padding:8px 15px; border-radius:50px; cursor:pointer">🔗 COMPARTILHAR EXTRATO</button>
+<div class="container" id="main" style="display:none">
+    <div style="text-align:center; padding: 25px 0;">
+        <div id="curName" style="font-weight:800; color:#94a3b8; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem"></div>
+        <div style="font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
+        
+        <div id="pinDisplay" style="background:#fff; border: 1px solid #eee; display:inline-block; padding: 10px 20px; border-radius: 15px; margin-top: 10px;">
+            <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8;">PIN DE ACESSO:</span>
+            <span id="txtPin" style="font-weight: 800; color: var(--p); margin-left: 5px;">----</span>
+        </div>
+        <br>
+        <button onclick="copyL()" style="background:var(--g); border:none; color:#fff; font-weight:700; font-size:0.75rem; padding: 12px 24px; border-radius: 50px; cursor:pointer; margin-top:15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+            🟢 ENVIAR PARA O WHATSAPP
+        </button>
     </div>
 
+    <div class="dash-row" id="mesesGrid"></div>
+
     <div class="card">
-        <h3 style="margin:0 0 10px 0; font-size:0.85rem; color:#64748b">LANÇAMENTO</h3>
-        
-        <div style="display: flex; gap: 8px;">
-            <input type="number" id="dia" placeholder="Dia" style="flex:1">
-            <select id="mesRef" style="flex:2">
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="dia" placeholder="Dia">
+            <select id="mesRef">
                 <option value="01">Janeiro</option><option value="02">Fevereiro</option>
                 <option value="03">Março</option><option value="04">Abril</option>
                 <option value="05">Maio</option><option value="06">Junho</option>
@@ -91,24 +96,13 @@
                 <option value="11">Novembro</option><option value="12">Dezembro</option>
             </select>
         </div>
-
-        <span class="shortcuts-label">ATALHOS RÁPIDOS</span>
-        <div class="shortcuts-container" id="shortcutBox">
-            <button class="tag-btn tag-add" onclick="addShortcut()">＋</button>
-        </div>
-
-        <input type="text" id="mot" placeholder="O que ele comprou?">
+        <div class="shortcuts-container" id="shortcutBox"></div>
+        <input type="text" id="mot" placeholder="Descrição">
         <input type="number" id="val" placeholder="Valor R$">
-        
-        <div style="display:flex; gap:10px; margin-top:10px">
-            <button class="btn b-buy" onclick="save('COMPRA')">🛒 COMPRA</button>
-            <button class="btn b-vale" onclick="save('VALE')">💵 VALE</button>
+        <div style="display:flex; gap:12px; margin-top:10px">
+            <button class="btn b-dark" style="flex:1" onclick="save('COMPRA')">🛒 COMPRA</button>
+            <button class="btn" style="flex:1; background:var(--b); color:#fff" onclick="save('VALE')">💵 VALE</button>
         </div>
-    </div>
-
-    <div class="card" style="border-left: 5px solid var(--g)">
-        <h3 style="margin:0 0 10px 0; font-size:0.85rem; color:#64748b">PAGAMENTO</h3>
-        <input type="number" id="vP" placeholder="Valor recebido">
         <button class="btn b-pay" onclick="pay()">REGISTRAR PAGAMENTO ✅</button>
     </div>
 
@@ -116,6 +110,7 @@
 </div>
 
 <script>
+    // CREDENCIAIS JÁ INSERIDAS
     const firebaseConfig = {
         apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
         authDomain: "teste-divida.firebaseapp.com",
@@ -128,30 +123,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let loja = "Mega Mix", idA = null, nomeA = "";
-    let shortcuts = JSON.parse(localStorage.getItem('myShortcuts')) || ["Compras", "Suco", "Doce", "Refri", "Cerveja"];
+    let loja = "Mega Mix", idA = null, nomeA = "", pinA = "";
+    let shortcuts = JSON.parse(localStorage.getItem('myShortcuts')) || ["Compras", "Suco", "Doce", "Refri", "Marmita"];
+    const mesesNomes = { "01":"Jan","02":"Fev","03":"Mar","04":"Abr","05":"Mai","06":"Jun","07":"Jul","08":"Ago","09":"Set","10":"Out","11":"Nov","12":"Dez" };
 
     function loadShortcuts() {
         const box = document.getElementById('shortcutBox');
         box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="setDesc('${s}')">${s}</button>`).join('') + 
-                       `<button class="tag-btn tag-add" onclick="addShortcut()">＋</button>`;
+                       `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
     }
-
     function setDesc(txt) { document.getElementById('mot').value = txt; }
-
     function addShortcut() {
-        const novo = prompt("Nome do novo atalho:");
-        if(novo) {
-            shortcuts.push(novo);
-            localStorage.setItem('myShortcuts', JSON.stringify(shortcuts));
-            loadShortcuts();
-        }
-    }
-
-    function ajustarDataHoje() {
-        const h = new Date();
-        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
-        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
+        const n = prompt("Novo atalho:");
+        if(n) { shortcuts.push(n); localStorage.setItem('myShortcuts', JSON.stringify(shortcuts)); loadShortcuts(); }
     }
 
     function setLoja(l, b) {
@@ -168,40 +152,72 @@
             list.innerHTML = "";
             s.forEach(f => {
                 const active = idA === f.key ? 'active' : '';
-                list.innerHTML += `<div class="f-chip ${active}" onclick="sel('${f.key}', '${f.val().nome}')">${f.val().nome}</div>`;
+                list.innerHTML += `<div class="f-chip ${active}" onclick="sel('${f.key}', '${f.val().nome}', '${f.val().pin || "----"}')">${f.val().nome}</div>`;
             });
         });
     }
 
-    function sel(id, n) {
-        idA = id; nomeA = n;
+    function sel(id, n, pin) {
+        idA = id; nomeA = n; pinA = pin;
         document.getElementById('main').style.display = 'block';
         document.getElementById('curName').innerText = n;
-        ajustarDataHoje();
+        document.getElementById('txtPin').innerText = pin;
+        const h = new Date();
+        document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
+        document.getElementById('mesRef').value = String(h.getMonth()+1).padStart(2,'0');
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => render(s.val()));
         loadF();
     }
 
     function render(d) {
         const tab = document.getElementById('tab');
-        let t = 0; tab.innerHTML = "";
+        const grid = document.getElementById('mesesGrid');
+        let tGeral = 0; let gastosMes = {};
+        tab.innerHTML = "";
+
         if(d) {
-            Object.keys(d).reverse().forEach(key => {
-                const x = d[key]; t += x.valor;
+            const itens = Object.keys(d).map(k => ({...d[k], key: k}));
+            itens.forEach(x => {
+                tGeral += x.valor;
+                const mes = x.data.split('/')[1];
+                gastosMes[mes] = (gastosMes[mes] || 0) + x.valor;
+            });
+
+            itens.reverse().forEach(x => {
+                let rowClass = x.tipo === 'VALE' ? "row-vale" : (x.valor < 0 ? "row-pgto" : "");
                 tab.innerHTML += `
-                <div class="row animate-up">
+                <div class="row ${rowClass}">
                     <div style="flex:1">
                         <span class="badge">${x.data}</span>
-                        <div style="font-weight:700; font-size:0.85rem; color:var(--p)">${x.motivo}</div>
+                        <div style="font-weight:700; font-size:0.9rem">${x.motivo}</div>
                     </div>
-                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:10px">
+                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:15px">
                         R$ ${Math.abs(x.valor).toFixed(2)}
                     </div>
-                    <button class="btn-del" onclick="deletarItem('${key}')">×</button>
+                    <button class="btn-del" onclick="deletarItem('${x.key}')">×</button>
                 </div>`;
             });
         }
-        document.getElementById('tG').innerText = t.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
+
+        grid.innerHTML = "";
+        const mesesOrd = Object.keys(gastosMes).sort();
+        const ultimos = mesesOrd.slice(-2);
+        ultimos.forEach((m, idx) => {
+            const estilo = (idx === 0 && ultimos.length > 1) ? 'mes-antigo' : 'mes-atual';
+            grid.innerHTML += `
+                <div class="dash-item ${estilo}">
+                    <span class="dash-label">${mesesNomes[m]}</span>
+                    <div class="dash-val">R$ ${gastosMes[m].toFixed(2)}</div>
+                </div>`;
+        });
+        document.getElementById('tG').innerText = tGeral.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
+    }
+
+    function addF() {
+        const n = document.getElementById('nF').value;
+        const pin = Math.floor(1000 + Math.random() * 9000).toString();
+        if(n) db.ref(`lojas/${loja}/funcionarios`).push({ nome: n, pin: pin });
+        document.getElementById('nF').value = "";
     }
 
     function save(tipo) {
@@ -213,24 +229,23 @@
     }
 
     function pay() {
-        const v = parseFloat(document.getElementById('vP').value);
-        if(!v) return;
-        const h = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-        db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO', data:h, valor:-v, tipo:'PGTO'});
-        document.getElementById('vP').value = "";
+        const v = parseFloat(document.getElementById('val').value);
+        const d = document.getElementById('dia').value, mes = document.getElementById('mesRef').value;
+        if(v) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO', data:d.padStart(2,'0')+'/'+mes, valor:-v, tipo:'PGTO'});
+            document.getElementById('val').value = "";
+        }
     }
 
     function deletarItem(k) { if(confirm("Apagar?")) db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${k}`).remove(); }
-
+    
     function copyL() {
         const link = `${window.location.origin}${window.location.pathname.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
-        navigator.clipboard.writeText(`Extrato ${nomeA}:\n🔗 ${link}`);
-        document.getElementById('toast').style.display = 'block';
-        setTimeout(() => document.getElementById('toast').style.display = 'none', 2000);
+        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato atualizado:\n🔗 ${link}\n\nSua senha (PIN): *${pinA}*`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    loadShortcuts();
-    loadF();
+    loadShortcuts(); loadF();
 </script>
 </body>
 </html>
