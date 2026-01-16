@@ -39,10 +39,7 @@
         .row-vale { border-left: 6px solid var(--b); background: #eff6ff; }
         .row-pgto { border-left: 6px solid var(--g); background: #f0fdf4; }
         .btn-del { background: #fee2e2; color: var(--r); border: none; width: 36px; height: 36px; border-radius: 12px; font-weight: 800; }
-        
-        /* Estilo do novo botão de remover funcionário */
-        .btn-remover-f { background: none; border: 1px solid #fee2e2; color: var(--r); padding: 5px 10px; border-radius: 10px; font-size: 0.6rem; font-weight: 800; cursor: pointer; margin-left: 10px; vertical-align: middle; }
-        .btn-remover-f:hover { background: #fee2e2; }
+        .btn-remover-f { background: none; border: 1px solid #fee2e2; color: var(--r); padding: 5px 10px; border-radius: 10px; font-size: 0.6rem; font-weight: 800; cursor: pointer; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -62,11 +59,10 @@
 
 <div class="container" id="main" style="display:none">
     <div style="text-align:center; padding: 20px 0;">
-        <div style="display: flex; align-items: center; justify-content: center;">
+        <div style="display:flex; align-items:center; justify-content:center">
             <div id="curName" style="font-weight:800; color:#94a3b8; text-transform: uppercase; font-size: 0.75rem"></div>
             <button class="btn-remover-f" onclick="removeF()">APAGAR PERFIL</button>
         </div>
-        
         <div style="font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin: 5px 0" id="tG">R$ 0,00</div>
         
         <div class="soma-box">
@@ -111,7 +107,8 @@
 </div>
 
 <script>
-    const LINK_GITHUB = window.location.href.split('admin.html')[0];
+    // AJUSTE PARA PEGAR O LINK DO SITE INDEPENDENTE DO ARQUIVO
+    const LINK_BASE = window.location.href.split('index.html')[0].split('?')[0];
 
     const firebaseConfig = {
         apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
@@ -149,14 +146,12 @@
         });
     }
 
-    // NOVA FUNÇÃO DE REMOVER
     function removeF() {
         if(!idA) return;
-        if(confirm(`⚠ PERIGO: Deseja apagar permanentemente o funcionário ${nomeA}? Todos os registros de dívidas dele serão excluídos do banco de dados.`)) {
+        if(confirm(`Tem certeza que deseja apagar ${nomeA}?`)) {
             db.ref(`lojas/${loja}/funcionarios/${idA}`).remove();
             document.getElementById('main').style.display = 'none';
-            idA = null;
-            loadF();
+            idA = null; loadF();
         }
     }
 
@@ -193,7 +188,6 @@
         }
         sG = sC + sV + sP; sC = sC + sP;
         filtrarSoma(currentFilter, document.getElementById(currentFilter === 'geral' ? 'btnG' : (currentFilter === 'compra' ? 'btnC' : 'btnV')));
-        
         grid.innerHTML = "";
         const mesesOrd = Object.keys(gastosMes).sort();
         const ultimos = mesesOrd.slice(-2);
@@ -232,7 +226,8 @@
     }
 
     function copyL() {
-        const link = `${LINK_GITHUB}extrato.html?loja=${encodeURIComponent(loja)}&id=${idA}`;
+        const base = LINK_BASE.endsWith('/') ? LINK_BASE : LINK_BASE + '/';
+        const link = `${base}extrato.html?loja=${encodeURIComponent(loja)}&id=${idA}`;
         const msg = encodeURIComponent(`Olá ${nomeA}! Extrato atualizado:\n🔗 ${link}\n\nPIN: *${pinA}*`);
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
