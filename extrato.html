@@ -9,35 +9,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --p: #0f172a; --a: #fbbf24; --bg: #f8fafc; --g: #10b981; --r: #f43f5e; --b: #2563eb; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; padding: 20px; }
-        .box { width: 100%; max-width: 400px; background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f1f5f9; }
-        input { width: 100%; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; font-size: 1.5rem; text-align: center; margin: 20px 0; outline: none; background: #f8fafc; font-weight: 800; letter-spacing: 5px; }
-        .btn { background: var(--p); color: var(--a); border: none; padding: 18px; width: 100%; border-radius: 20px; font-weight: 800; cursor: pointer; font-size: 1rem; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 400px; background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        input { width: 100%; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; font-size: 1.5rem; text-align: center; margin: 20px 0; outline: none; background: #f8fafc; letter-spacing: 5px; font-weight: 800; }
+        .btn { background: var(--p); color: var(--a); border: none; padding: 18px; width: 100%; border-radius: 20px; font-weight: 800; cursor: pointer; }
         #conteudo { display: none; width: 100%; max-width: 450px; }
         .row { display: flex; justify-content: space-between; padding: 16px; background: white; margin-bottom: 10px; border-radius: 20px; border: 1px solid #f1f5f9; align-items: center; }
         .row-vale { border-left: 5px solid var(--b); background: #eff6ff; }
         .val { font-weight: 800; }
-        .badge { font-size: 0.6rem; font-weight: 800; padding: 4px 8px; border-radius: 8px; background: #f1f5f9; color: #94a3b8; display: inline-block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
     <div id="login" class="box">
-        <div style="background: var(--p); width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-            <span style="color: var(--a); font-size: 1.5rem;">🔒</span>
-        </div>
         <h2 style="margin:0">Extrato Pessoal</h2>
-        <p style="color:#64748b; font-size: 0.9rem">Digite seu PIN de segurança</p>
+        <p style="color:#64748b; font-size: 0.9rem">Digite seu PIN de 4 dígitos</p>
         <input type="password" id="pinInput" maxlength="4" placeholder="0000" inputmode="numeric">
-        <button class="btn" onclick="verificar()">VISUALIZAR AGORA</button>
+        <button class="btn" onclick="verificar()">ACESSAR AGORA</button>
     </div>
 
     <div id="conteudo">
         <div class="box" style="margin-bottom: 20px; border-bottom: 4px solid var(--a);">
-            <span id="nomeF" style="text-transform: uppercase; font-weight: 800; color: #94a3b8; font-size: 0.7rem; letter-spacing: 1px;"></span>
+            <span id="nomeF" style="text-transform: uppercase; font-weight: 800; color: #94a3b8; font-size: 0.7rem"></span>
             <h1 id="totalG" style="font-size: 2.8rem; margin: 10px 0; letter-spacing: -2px; font-weight: 800;">R$ 0,00</h1>
-            <div style="font-size: 0.7rem; font-weight: 700; color: var(--g); background: #f0fdf4; display: inline-block; padding: 5px 15px; border-radius: 50px;">ATUALIZADO AGORA</div>
         </div>
         <div id="lista"></div>
     </div>
@@ -60,46 +54,36 @@
     const id = urlParams.get('id');
 
     function verificar() {
-        const input = document.getElementById('pinInput').value;
-        if(!loja || !id) return alert("Link inválido! Peça um novo link ao administrador.");
-        
+        const pin = document.getElementById('pinInput').value;
         db.ref(`lojas/${loja}/funcionarios/${id}`).once('value', s => {
             const f = s.val();
-            if(f && f.pin === input) {
+            if(f && f.pin === pin) {
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('conteudo').style.display = 'block';
                 document.getElementById('nomeF').innerText = f.nome;
-                carregarDados();
-            } else {
-                alert("PIN incorreto!");
-            }
+                carregar();
+            } else { alert("PIN incorreto!"); }
         });
     }
 
-    function carregarDados() {
+    function carregar() {
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => {
             const lista = document.getElementById('lista');
-            let total = 0;
-            lista.innerHTML = "";
-            
+            let total = 0; lista.innerHTML = "";
             if(s.exists()) {
                 const dados = s.val();
-                const chaves = Object.keys(dados).reverse();
-                
-                chaves.forEach(k => {
+                Object.keys(dados).reverse().forEach(k => {
                     const x = dados[k];
                     total += x.valor;
-                    let isVale = x.tipo === 'VALE';
-                    
+                    let isV = x.tipo === 'VALE';
                     lista.innerHTML += `
-                        <div class="row ${isVale ? 'row-vale' : ''}">
-                            <div style="text-align: left">
-                                <span class="badge">${x.data}</span>
-                                <div style="font-weight:700; font-size:0.9rem; color:var(--p)">${x.motivo}</div>
-                                ${isVale ? '<small style="color:var(--b); font-weight:800; font-size:0.6rem">DINHEIRO (VALE)</small>' : ''}
+                        <div class="row ${isV ? 'row-vale' : ''}">
+                            <div style="text-align:left">
+                                <small style="color:#94a3b8; font-weight:800; font-size:0.6rem">${x.data}</small>
+                                <div style="font-weight:700; font-size:0.85rem">${x.motivo}</div>
                             </div>
                             <div class="val" style="color:${x.valor < 0 ? 'var(--g)' : 'var(--r)'}">
-                                ${x.valor < 0 ? '-' : ''}R$ ${Math.abs(x.valor).toFixed(2)}
+                                R$ ${Math.abs(x.valor).toFixed(2)}
                             </div>
                         </div>`;
                 });
