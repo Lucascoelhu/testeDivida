@@ -30,6 +30,10 @@
         .big-val { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; }
         .row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f8f8f8; align-items: center; }
         .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #eee; }
+        
+        /* Botão Deletar */
+        .btn-del { background: #fff0f0; color: var(--r); border: none; padding: 8px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 800; }
+        .btn-del:hover { background: var(--r); color: white; }
     </style>
 </head>
 <body>
@@ -82,7 +86,7 @@
     </div>
 
     <div class="card">
-        <h3 style="margin:0 0 10px 0; font-size:1rem">Histórico</h3>
+        <h3 style="margin:0 0 10px 0; font-size:1rem">Histórico (Clique em X para apagar)</h3>
         <div id="tab"></div>
     </div>
 </div>
@@ -146,13 +150,31 @@
         const tab = document.getElementById('tab');
         let t = 0; tab.innerHTML = "";
         if(d) {
-            Object.values(d).reverse().forEach(x => {
+            // Pegamos as chaves (IDs únicos do Firebase) para poder deletar depois
+            Object.keys(d).reverse().forEach(key => {
+                const x = d[key];
                 t += x.valor;
-                tab.innerHTML += `<div class="row"><div><span class="badge">${x.data}</span><div style="font-weight:600; font-size:0.8rem">${x.motivo}</div></div><div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}">R$ ${Math.abs(x.valor).toFixed(2)}</div></div>`;
+                tab.innerHTML += `
+                <div class="row">
+                    <div style="flex:1">
+                        <span class="badge">${x.data}</span>
+                        <div style="font-weight:600; font-size:0.8rem">${x.motivo}</div>
+                    </div>
+                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:15px">
+                        R$ ${Math.abs(x.valor).toFixed(2)}
+                    </div>
+                    <button class="btn-del" onclick="deletarItem('${key}')">X</button>
+                </div>`;
             });
         }
         document.getElementById('tG').innerText = t.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
         window.total = t;
+    }
+
+    function deletarItem(itemKey) {
+        if(confirm("Tem certeza que deseja excluir este lançamento?")) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${itemKey}`).remove();
+        }
     }
 
     function save(tipo) {
