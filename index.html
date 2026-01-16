@@ -3,40 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA MEGA ADM</title>
+    <title>MEGA ADM ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #121417; --a: #ffcc00; --r: #ff4757; --g: #2ed573; --b: #3498db; --bg: #f8f9fa; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 40px; }
-        .stores { display: flex; background: var(--p); padding: 8px; gap: 8px; position: sticky; top: 0; z-index: 100; }
-        .s-btn { flex: 1; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #2a2e35; color: #777; }
-        .s-btn.active { background: var(--a); color: var(--p); }
-        .drawer { background: #1c1f24; padding: 15px; border-bottom: 4px solid var(--a); }
-        .f-list { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; }
-        .f-chip { background: #2a2e35; color: #fff; padding: 10px 18px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; border: 2px solid transparent; cursor: pointer; }
-        .f-chip.active { background: #fff; color: var(--p); font-weight: 700; border-color: var(--a); }
-        .container { max-width: 480px; margin: auto; padding: 15px; }
-        .card { background: #fff; border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-        input, select { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #f1f1f1; border-radius: 16px; font-size: 1rem; background: #fafafa; }
-        .btn { border: none; border-radius: 16px; font-weight: 700; cursor: pointer; padding: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; width: 100%; }
+        :root { 
+            --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; 
+            --b: #3b82f6; --bg: #f8fafc; --card: #ffffff; 
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 40px; overflow-x: hidden; }
+
+        /* Animações */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
+
+        .animate-up { animation: slideUp 0.5s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.4s ease-in; }
+
+        /* Navbar Lojas */
+        .stores { display: flex; background: var(--p); padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .s-btn { flex: 1; border: none; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 0.75rem; cursor: pointer; background: #1e293b; color: #64748b; transition: 0.3s; }
+        .s-btn.active { background: var(--a); color: var(--p); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+
+        /* Lista de Funcionários */
+        .drawer { background: #1e293b; padding: 20px; border-bottom: 4px solid var(--a); }
+        .f-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
+        .f-list::-webkit-scrollbar { display: none; }
+        .f-chip { background: #334155; color: #f8fafc; padding: 12px 20px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .f-chip.active { background: #fff; color: var(--p); border-color: var(--a); transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        .container { max-width: 500px; margin: auto; padding: 20px; }
+        
+        /* Cards Interativos */
+        .card { 
+            background: var(--card); border-radius: 28px; padding: 24px; margin-bottom: 24px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+        .card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
+
+        input, select { 
+            width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 18px; 
+            font-size: 1rem; background: #f8fafc; transition: 0.3s; outline: none;
+        }
+        input:focus { border-color: var(--a); background: #fff; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1); }
+
+        .btn { 
+            border: none; border-radius: 18px; font-weight: 700; cursor: pointer; padding: 18px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
+        }
+        .btn:active { animation: pulse 0.2s linear; }
+        
         .b-dark { background: var(--p); color: var(--a); }
         .b-vale { background: var(--b); color: #fff; flex: 1; }
         .b-buy { background: var(--p); color: #fff; flex: 1; }
-        .b-pay { background: var(--g); color: #fff; }
-        .total-info { text-align: center; padding: 20px 0; }
-        .big-val { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; }
-        .row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f8f8f8; align-items: center; }
-        .badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #eee; }
+        .b-pay { background: var(--g); color: #fff; width: 100%; margin-top: 10px; }
+
+        .total-info { text-align: center; padding: 30px 0; }
+        .big-val { font-size: 3.2rem; font-weight: 800; letter-spacing: -3px; color: var(--p); }
         
-        /* Botão Deletar */
-        .btn-del { background: #fff0f0; color: var(--r); border: none; padding: 8px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 800; }
-        .btn-del:hover { background: var(--r); color: white; }
+        /* Histórico Estilizado */
+        .row { display: flex; justify-content: space-between; padding: 16px; border-radius: 16px; margin-bottom: 8px; background: #fff; border: 1px solid #f1f5f9; align-items: center; transition: 0.2s; }
+        .row:hover { background: #f8fafc; }
+        .badge { font-size: 0.65rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; background: #e2e8f0; color: #475569; }
+        
+        .btn-del { 
+            background: #fee2e2; color: var(--r); border: none; width: 32px; height: 32px; 
+            border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s;
+        }
+        .btn-del:hover { background: var(--r); color: #fff; }
+
+        /* Toast de Cópia */
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--p); color: #fff; padding: 12px 25px; border-radius: 50px; font-weight: 600; font-size: 0.8rem; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
+
+<div id="toast">Link copiado com sucesso! 🚀</div>
 
 <div class="stores">
     <button id="m1" class="s-btn active" onclick="setLoja('Mega Mix', 'm1')">MEGA MIX</button>
@@ -44,25 +92,25 @@
 </div>
 
 <div class="drawer">
-    <div style="display:flex; gap:10px; margin-bottom:10px">
-        <input type="text" id="nF" placeholder="Novo funcionário..." style="margin:0; padding:12px">
-        <button class="btn b-dark" onclick="addF()" style="width:50px; padding:0">+</button>
+    <div style="display:flex; gap:12px; margin-bottom:12px">
+        <input type="text" id="nF" placeholder="Nome do novo funcionário..." style="margin:0; padding:14px">
+        <button class="btn b-dark" onclick="addF()" style="width:60px; padding:0; border-radius: 15px">＋</button>
     </div>
     <div id="fList" class="f-list"></div>
 </div>
 
-<div class="container" id="main" style="display:none">
+<div class="container animate-up" id="main" style="display:none">
     <div class="total-info">
-        <div id="curName" style="font-weight:700; color:#888"></div>
+        <div id="curName" style="font-weight:700; color:#94a3b8; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem"></div>
         <div class="big-val" id="tG">R$ 0,00</div>
-        <button onclick="copyL()" style="background:none; border:none; color:var(--b); font-weight:600; font-size:0.8rem; cursor:pointer">🔗 Copiar link para WhatsApp</button>
+        <button onclick="copyL()" style="background:rgba(59, 130, 246, 0.1); border:none; color:var(--b); font-weight:700; font-size:0.75rem; padding: 8px 16px; border-radius: 50px; cursor:pointer; margin-top:10px">🔗 COMPARTILHAR EXTRATO</button>
     </div>
 
     <div class="card">
-        <h3 style="margin:0; font-size:1rem">Lançar Compra/Vale</h3>
+        <h3 style="margin:0 0 15px 0; font-size:0.9rem; color: #64748b">NOVO LANÇAMENTO</h3>
         <div style="display: flex; gap: 10px;">
-            <input type="number" id="dia" placeholder="Dia" style="flex: 1;">
-            <select id="mesRef" style="flex: 2;">
+            <input type="number" id="dia" placeholder="Dia">
+            <select id="mesRef">
                 <option value="01">Janeiro</option><option value="02">Fevereiro</option>
                 <option value="03">Março</option><option value="04">Abril</option>
                 <option value="05">Maio</option><option value="06">Junho</option>
@@ -71,22 +119,22 @@
                 <option value="11">Novembro</option><option value="12">Dezembro</option>
             </select>
         </div>
-        <input type="text" id="mot" placeholder="Descrição">
+        <input type="text" id="mot" placeholder="Descrição (ex: Tênis Nike, Vale)">
         <input type="number" id="val" placeholder="Valor R$">
-        <div style="display:flex; gap:10px; margin-top:10px">
+        <div style="display:flex; gap:12px; margin-top:10px">
             <button class="btn b-buy" onclick="save('COMPRA')">🛒 COMPRA</button>
             <button class="btn b-vale" onclick="save('VALE')">💵 VALE</button>
         </div>
     </div>
 
-    <div class="card">
-        <h3 style="margin:0; font-size:1rem">Pagamento</h3>
-        <input type="number" id="vP" placeholder="Valor recebido">
-        <button class="btn b-pay" onclick="pay()">REGISTRAR PAGAMENTO</button>
+    <div class="card" style="border-left: 6px solid var(--g)">
+        <h3 style="margin:0 0 10px 0; font-size:0.9rem; color: #64748b">BAIXAR DÍVIDA</h3>
+        <input type="number" id="vP" placeholder="Valor que o funcionário pagou">
+        <button class="btn b-pay" onclick="pay()">REGISTRAR PAGAMENTO ✅</button>
     </div>
 
-    <div class="card">
-        <h3 style="margin:0 0 10px 0; font-size:1rem">Histórico (Clique em X para apagar)</h3>
+    <div id="hist-area" class="animate-fade">
+        <h3 style="margin:10px 10px; font-size:0.9rem; color: #64748b">HISTÓRICO RECENTE</h3>
         <div id="tab"></div>
     </div>
 </div>
@@ -105,6 +153,12 @@
     const db = firebase.database();
 
     let loja = "Mega Mix", idA = null, nomeA = "";
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2500);
+    }
 
     function ajustarDataHoje() {
         const hoje = new Date();
@@ -139,8 +193,13 @@
 
     function sel(id, n) {
         idA = id; nomeA = n;
-        document.getElementById('main').style.display = 'block';
-        document.getElementById('curName').innerText = n.toUpperCase();
+        const main = document.getElementById('main');
+        main.style.display = 'block';
+        main.classList.remove('animate-up');
+        void main.offsetWidth; // Trigger reflow
+        main.classList.add('animate-up');
+        
+        document.getElementById('curName').innerText = n;
         ajustarDataHoje();
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => render(s.val()));
         loadF();
@@ -150,20 +209,19 @@
         const tab = document.getElementById('tab');
         let t = 0; tab.innerHTML = "";
         if(d) {
-            // Pegamos as chaves (IDs únicos do Firebase) para poder deletar depois
             Object.keys(d).reverse().forEach(key => {
                 const x = d[key];
                 t += x.valor;
                 tab.innerHTML += `
-                <div class="row">
+                <div class="row animate-fade">
                     <div style="flex:1">
                         <span class="badge">${x.data}</span>
-                        <div style="font-weight:600; font-size:0.8rem">${x.motivo}</div>
+                        <div style="font-weight:700; font-size:0.85rem; margin-top:4px; color:var(--p)">${x.motivo}</div>
                     </div>
-                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:15px">
-                        R$ ${Math.abs(x.valor).toFixed(2)}
+                    <div style="font-weight:800; color:${x.valor<0?'var(--g)':'var(--r)'}; margin-right:12px; font-size:0.9rem">
+                        ${x.valor < 0 ? '-' : ''} R$ ${Math.abs(x.valor).toFixed(2)}
                     </div>
-                    <button class="btn-del" onclick="deletarItem('${key}')">X</button>
+                    <button class="btn-del" onclick="deletarItem('${key}')">×</button>
                 </div>`;
             });
         }
@@ -171,9 +229,9 @@
         window.total = t;
     }
 
-    function deletarItem(itemKey) {
-        if(confirm("Tem certeza que deseja excluir este lançamento?")) {
-            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${itemKey}`).remove();
+    function deletarItem(key) {
+        if(confirm("Deseja apagar este registro permanentemente?")) {
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${key}`).remove();
         }
     }
 
@@ -189,14 +247,14 @@
         const v = parseFloat(document.getElementById('vP').value);
         if(!v) return;
         const dataH = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-        db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO', data:dataH, valor:-v, tipo:'PGTO'});
+        db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:'PAGAMENTO RECEBIDO', data:dataH, valor:-v, tipo:'PGTO'});
         document.getElementById('vP').value = "";
     }
 
     function copyL() {
-        const link = `${window.location.href.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
-        navigator.clipboard.writeText(`Olá ${nomeA}, seu extrato da ${loja}:\n🔗 ${link}`);
-        alert("Link copiado!");
+        const link = `${window.location.origin}${window.location.pathname.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
+        navigator.clipboard.writeText(`Olá ${nomeA}! Aqui está seu extrato atualizado da ${loja}:\n\n🔗 ${link}`);
+        showToast();
     }
     loadF();
 </script>
