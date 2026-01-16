@@ -6,34 +6,59 @@
     <title>Meu Extrato - MEGA</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --p: #0f172a; --a: #fbbf24; --bg: #f8fafc; --g: #10b981; --r: #f43f5e; --b: #2563eb; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 400px; background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; }
+        
+        /* Box de Login */
+        .box-login { width: 100%; max-width: 400px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center; margin-top: 50px; }
         input { width: 100%; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; font-size: 1.5rem; text-align: center; margin: 20px 0; outline: none; background: #f8fafc; letter-spacing: 5px; font-weight: 800; }
-        .btn { background: var(--p); color: var(--a); border: none; padding: 18px; width: 100%; border-radius: 20px; font-weight: 800; cursor: pointer; }
+        .btn { background: var(--p); color: var(--a); border: none; padding: 18px; width: 100%; border-radius: 20px; font-weight: 800; cursor: pointer; font-size: 1rem; }
+        
         #conteudo { display: none; width: 100%; max-width: 450px; }
-        .row { display: flex; justify-content: space-between; padding: 16px; background: white; margin-bottom: 10px; border-radius: 20px; border: 1px solid #f1f5f9; align-items: center; }
-        .row-vale { border-left: 5px solid var(--b); background: #eff6ff; }
-        .val { font-weight: 800; }
+        
+        /* Cabeçalho do Extrato */
+        .header { background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; margin-bottom: 20px; border-bottom: 5px solid var(--a); }
+        .nome-pessoa { font-size: 1.2rem; font-weight: 800; color: var(--p); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+        .label-extrato { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+        .saldo-atual { font-size: 3.2rem; margin: 10px 0; letter-spacing: -2px; font-weight: 800; color: var(--p); }
+
+        /* Lista de Itens */
+        .row { display: flex; justify-content: space-between; padding: 18px; background: white; margin-bottom: 12px; border-radius: 22px; border: 1px solid #f1f5f9; align-items: center; }
+        .row-vale { border-left: 6px solid var(--b); background: #f0f7ff; }
+        .row-pgto { border-left: 6px solid var(--g); background: #f0fdf4; }
+        
+        .data-item { color: #64748b; font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 2px; }
+        .desc-item { font-weight: 700; font-size: 1rem; color: var(--p); }
+        .val-item { font-weight: 800; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <div id="login" class="box">
-        <h2 style="margin:0">Extrato Pessoal</h2>
-        <p style="color:#64748b; font-size: 0.9rem">Digite seu PIN de 4 dígitos</p>
+    <div id="login" class="box-login">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
+        <h2 style="margin:0; font-weight: 800;">Acesso Seguro</h2>
+        <p style="color:#64748b; font-size: 0.9rem">Informe seu PIN para continuar</p>
         <input type="password" id="pinInput" maxlength="4" placeholder="0000" inputmode="numeric">
-        <button class="btn" onclick="verificar()">ACESSAR AGORA</button>
+        <button class="btn" onclick="verificar()">ACESSAR EXTRATO</button>
     </div>
 
     <div id="conteudo">
-        <div class="box" style="margin-bottom: 20px; border-bottom: 4px solid var(--a);">
-            <span id="nomeF" style="text-transform: uppercase; font-weight: 800; color: #94a3b8; font-size: 0.7rem"></span>
-            <h1 id="totalG" style="font-size: 2.8rem; margin: 10px 0; letter-spacing: -2px; font-weight: 800;">R$ 0,00</h1>
+        <div class="header">
+            <span class="label-extrato">Olá,</span>
+            <span id="nomeF" class="nome-pessoa">CARREGANDO...</span>
+            <div style="width: 40px; height: 2px; background: var(--a); margin: 15px auto;"></div>
+            <span class="label-extrato">Saldo em aberto</span>
+            <h1 id="totalG" class="saldo-atual">R$ 0,00</h1>
         </div>
+
         <div id="lista"></div>
+        
+        <p style="text-align: center; color: #94a3b8; font-size: 0.7rem; font-weight: 700; margin-top: 30px;">
+            MEGA MIX & MEGA SHOW • SISTEMA FINANCEIRO
+        </p>
     </div>
 
 <script>
@@ -55,6 +80,8 @@
 
     function verificar() {
         const pin = document.getElementById('pinInput').value;
+        if(!loja || !id) { alert("Link inválido!"); return; }
+
         db.ref(`lojas/${loja}/funcionarios/${id}`).once('value', s => {
             const f = s.val();
             if(f && f.pin === pin) {
@@ -62,28 +89,36 @@
                 document.getElementById('conteudo').style.display = 'block';
                 document.getElementById('nomeF').innerText = f.nome;
                 carregar();
-            } else { alert("PIN incorreto!"); }
+            } else { 
+                alert("PIN incorreto!"); 
+            }
         });
     }
 
     function carregar() {
         db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => {
             const lista = document.getElementById('lista');
-            let total = 0; lista.innerHTML = "";
+            let total = 0; 
+            lista.innerHTML = "";
+            
             if(s.exists()) {
                 const dados = s.val();
-                Object.keys(dados).reverse().forEach(k => {
-                    const x = dados[k];
+                const itens = Object.keys(dados).map(k => dados[k]).reverse();
+                
+                itens.forEach(x => {
                     total += x.valor;
-                    let isV = x.tipo === 'VALE';
+                    let isVale = x.tipo === 'VALE';
+                    let isPgto = x.valor < 0;
+                    let rowClass = isVale ? 'row-vale' : (isPgto ? 'row-pgto' : '');
+                    
                     lista.innerHTML += `
-                        <div class="row ${isV ? 'row-vale' : ''}">
+                        <div class="row ${rowClass}">
                             <div style="text-align:left">
-                                <small style="color:#94a3b8; font-weight:800; font-size:0.6rem">${x.data}</small>
-                                <div style="font-weight:700; font-size:0.85rem">${x.motivo}</div>
+                                <span class="data-item">${x.data}</span>
+                                <div class="desc-item">${x.motivo}</div>
                             </div>
-                            <div class="val" style="color:${x.valor < 0 ? 'var(--g)' : 'var(--r)'}">
-                                R$ ${Math.abs(x.valor).toFixed(2)}
+                            <div class="val-item" style="color:${isPgto ? 'var(--g)' : 'var(--r)'}">
+                                ${isPgto ? '-' : ''}R$ ${Math.abs(x.valor).toFixed(2)}
                             </div>
                         </div>`;
                 });
