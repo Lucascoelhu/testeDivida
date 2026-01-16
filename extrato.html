@@ -2,108 +2,87 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Meu Extrato | Mega Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Extrato</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #121417; --accent: #ffcc00; --danger: #ff4757; --success: #2ed573; --info: #3498db; --bg: #f4f7f6; --card: #ffffff; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--primary); margin: 0; padding: 0; }
-        header { background: var(--primary); padding: 40px 20px 80px 20px; text-align: center; color: white; }
-        .store-badge { background: var(--accent); color: var(--primary); padding: 5px 15px; border-radius: 50px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
-        h1 { margin: 15px 0 5px 0; font-size: 1.5rem; font-weight: 700; }
-        .balance-card { background: var(--card); width: 85%; margin: -50px auto 30px auto; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
-        .balance-value { font-size: 2.2rem; font-weight: 800; margin: 5px 0; color: var(--primary); letter-spacing: -1px; }
-        .container { padding: 0 20px 40px 20px; max-width: 500px; margin: auto; }
-        .month-header { font-weight: 800; font-size: 0.9rem; color: #555; margin: 25px 0 15px 0; display: flex; align-items: center; gap: 10px; }
-        .month-header::after { content: ''; flex: 1; height: 1px; background: #ddd; }
-        .item-card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .item-info { flex: 1; }
-        .item-name { font-weight: 700; font-size: 0.95rem; display: block; }
-        .item-date { font-size: 0.75rem; color: #aaa; }
-        .item-val { font-weight: 800; font-size: 1rem; }
-        .val-danger { color: var(--danger); }
-        .val-success { color: var(--success); }
-        .footer { background: #fdfdfd; border: 1px dashed #ddd; padding: 12px 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .loading { text-align: center; padding: 100px 20px; font-weight: 600; color: #888; }
+        :root { --p: #0f172a; --a: #fbbf24; --bg: #f8fafc; --g: #10b981; --r: #f43f5e; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; padding: 20px; }
+        .box { width: 100%; max-width: 400px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; }
+        input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; font-size: 1.2rem; text-align: center; margin: 20px 0; outline: none; }
+        .btn { background: var(--p); color: var(--a); border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        #conteudo { display: none; width: 100%; max-width: 450px; }
+        .row { display: flex; justify-content: space-between; padding: 15px; background: white; margin-bottom: 8px; border-radius: 15px; border: 1px solid #f1f5f9; align-items: center; }
+        .val { font-weight: 800; }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loading">Sincronizando seu extrato...</div>
-
-<div id="main-content" style="display: none;">
-    <header>
-        <span class="store-badge" id="lojaNome">---</span>
-        <h1 id="funcNome">Olá!</h1>
-    </header>
-    <div class="balance-card">
-        <div style="font-size:0.75rem; font-weight:600; color:#888">DÍVIDA TOTAL</div>
-        <div class="balance-value" id="saldoGeral">R$ 0,00</div>
+    <div id="login" class="box">
+        <h2 style="margin:0">Acesso Restrito</h2>
+        <p style="color:#64748b; font-size: 0.9rem">Digite seu PIN de 4 dígitos</p>
+        <input type="password" id="pinInput" maxlength="4" placeholder="0 0 0 0" inputmode="numeric">
+        <button class="btn" onclick="verificar()">ACESSAR EXTRATO</button>
     </div>
-    <div class="container" id="extratoCorpo"></div>
-</div>
+
+    <div id="conteudo">
+        <div class="box" style="margin-bottom: 20px;">
+            <span id="nomeF" style="text-transform: uppercase; font-weight: 800; color: #94a3b8; font-size: 0.7rem"></span>
+            <h1 id="totalG" style="font-size: 2.5rem; margin: 10px 0; letter-spacing: -2px;">R$ 0,00</h1>
+        </div>
+        <div id="lista"></div>
+    </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
-        authDomain: "teste-divida.firebaseapp.com",
-        databaseURL: "https://teste-divida-default-rtdb.firebaseio.com",
-        projectId: "teste-divida",
-        storageBucket: "teste-divida.firebasestorage.app",
-        messagingSenderId: "72737446721",
-        appId: "1:72737446721:web:9f179ee0812dc110bf5fc0"
-    };
+    const firebaseConfig = { /* USE AS MESMAS CREDENCIAIS DO ADMIN */ };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const p = new URLSearchParams(window.location.search);
-    const loja = p.get('loja'), id = p.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const loja = urlParams.get('loja');
+    const id = urlParams.get('id');
 
-    const mesesNomes = { "01":"Janeiro","02":"Fevereiro","03":"Março","04":"Abril","05":"Maio","06":"Junho","07":"Julho","08":"Agosto","09":"Setembro","10":"Outubro","11":"Novembro","12":"Dezembro" };
-
-    if(loja && id) {
-        db.ref(`lojas/${loja}/funcionarios/${id}`).on('value', snap => {
-            const data = snap.val();
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            if(data) {
-                document.getElementById('lojaNome').innerText = loja;
-                document.getElementById('funcNome').innerText = "Olá, " + data.nome;
-                renderizar(data.dividas);
+    function verificar() {
+        const input = document.getElementById('pinInput').value;
+        db.ref(`lojas/${loja}/funcionarios/${id}`).once('value', s => {
+            const f = s.val();
+            if(f.pin === input) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('conteudo').style.display = 'block';
+                document.getElementById('nomeF').innerText = f.nome;
+                carregarDados();
             } else {
-                document.getElementById('extratoCorpo').innerHTML = "Funcionário não encontrado.";
+                alert("PIN incorreto!");
             }
         });
     }
 
-    function renderizar(divs) {
-        const corpo = document.getElementById('extratoCorpo');
-        corpo.innerHTML = "";
-        let totalGeral = 0;
-        if(!divs) {
-            document.getElementById('saldoGeral').innerText = "R$ 0,00";
-            corpo.innerHTML = "<div style='text-align:center; padding:40px; color:#aaa'>Tudo em dia!</div>";
-            return;
-        }
-        const grupos = {};
-        Object.values(divs).forEach(d => {
-            totalGeral += d.valor;
-            const m = d.data.split('/')[1];
-            if(!grupos[m]) grupos[m] = { itens: [], total: 0 };
-            grupos[m].itens.push(d);
-            grupos[m].total += d.valor;
-        });
-        document.getElementById('saldoGeral').innerText = totalGeral.toLocaleString('pt-br', {style:'currency',currency:'BRL'});
-        Object.keys(grupos).sort().reverse().forEach(m => {
-            let h = `<div class="month-header">${mesesNomes[m]}</div>`;
-            grupos[m].itens.reverse().forEach(x => {
-                h += `<div class="item-card"><div class="item-info"><span class="item-name">${x.motivo}</span><span class="item-date">${x.data}</span></div><div class="item-val ${x.valor<0?'val-success':'val-danger'}">R$ ${Math.abs(x.valor).toFixed(2)}</div></div>`;
-            });
-            h += `<div class="footer"><span style="font-size:0.7rem;font-weight:700;color:#888">SALDO DO MÊS</span><span style="font-weight:800">R$ ${grupos[m].total.toFixed(2)}</span></div>`;
-            corpo.innerHTML += h;
+    function carregarDados() {
+        db.ref(`lojas/${loja}/funcionarios/${id}/dividas`).on('value', s => {
+            const lista = document.getElementById('lista');
+            let total = 0;
+            lista.innerHTML = "";
+            
+            if(s.exists()) {
+                const dados = s.val();
+                Object.keys(dados).reverse().forEach(k => {
+                    const x = dados[k];
+                    total += x.valor;
+                    lista.innerHTML += `
+                        <div class="row">
+                            <div>
+                                <small style="color:#94a3b8; font-weight:800; font-size:0.6rem">${x.data}</small>
+                                <div style="font-weight:600; font-size:0.85rem">${x.motivo}</div>
+                            </div>
+                            <div class="val" style="color:${x.valor < 0 ? 'var(--g)' : 'var(--r)'}">
+                                R$ ${Math.abs(x.valor).toFixed(2)}
+                            </div>
+                        </div>`;
+                });
+            }
+            document.getElementById('totalG').innerText = total.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
         });
     }
 </script>
