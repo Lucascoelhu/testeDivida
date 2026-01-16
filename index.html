@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MEGA ADM - ABATIMENTO POR MÊS</title>
+    <title>MEGA ADM - ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -11,8 +11,6 @@
         :root { --p: #0f172a; --a: #fbbf24; --r: #f43f5e; --g: #10b981; --b: #2563eb; --bg: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); color: var(--p); padding-bottom: 50px; }
-
-        /* Estilo original mantido */
         .stores { display: flex; background: var(--p); padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 100; }
         .s-btn { flex: 1; border: none; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.7rem; cursor: pointer; background: #1e293b; color: #64748b; text-transform: uppercase; }
         .s-btn.active { background: var(--a); color: var(--p); }
@@ -84,10 +82,9 @@
         <div style="display: flex; gap: 10px;">
             <input type="number" id="dia" placeholder="Dia" inputmode="numeric">
             <select id="mesRef">
-                <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
-                <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
-                <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-                <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
+                <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
+                <option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
             </select>
         </div>
         <div class="shortcuts-container" id="shortcutBox"></div>
@@ -105,6 +102,11 @@
 </div>
 
 <script>
+    // ==========================================
+    // ESCREVA SEU LINK NO LUGAR DO EXEMPLO ABAIXO:
+    const SEU_LINK_BASE = "https://lucascoelhu.github.io/testeDivida/extrato.html"; 
+    // ==========================================
+
     const firebaseConfig = {
         apiKey: "AIzaSyDo_13oIV7Jy5pmsbKBNxtGBIjb_H2Yo-s",
         authDomain: "teste-divida.firebaseapp.com",
@@ -172,7 +174,6 @@
         }
         sG = sC + sV + sP; sC = sC + sP;
         filtrarSoma(currentFilter, document.getElementById(currentFilter === 'geral' ? 'btnG' : (currentFilter === 'compra' ? 'btnC' : 'btnV')));
-        
         grid.innerHTML = "";
         const mesesOrd = Object.keys(gastosMes).sort();
         const ultimos = mesesOrd.slice(-2);
@@ -184,16 +185,10 @@
 
     function pay() {
         const v = parseFloat(document.getElementById('val').value), d = document.getElementById('dia').value, mes = document.getElementById('mesRef').value;
-        if(!v) return alert("Digite o valor do abatimento");
-        
-        const mesAbater = prompt("Qual mês você está abatendo? (Ex: 01 para Janeiro, 02 para Fevereiro...)", mes);
+        if(!v) return alert("Digite o valor");
+        const mesAbater = prompt("Abatendo qual mês?", mes);
         if(mesAbater) {
-            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({
-                motivo: `ABATIMENTO MÊS ${mesAbater}`, 
-                data: d.padStart(2,'0')+'/'+mes, 
-                valor: -v, 
-                tipo: 'PGTO'
-            });
+            db.ref(`lojas/${loja}/funcionarios/${idA}/dividas`).push({motivo:`ABATIMENTO MÊS ${mesAbater}`, data:d.padStart(2,'0')+'/'+mes, valor:-v, tipo:'PGTO'});
             document.getElementById('val').value = "";
         }
     }
@@ -216,6 +211,13 @@
         }
     }
 
+    function copyL() {
+        // Gera o link usando a URL base que você definiu no topo do script
+        const link = `${SEU_LINK_BASE}/extrato.html?loja=${encodeURIComponent(loja)}&id=${idA}`;
+        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato foi atualizado:\n🔗 ${link}\n\nPIN: *${pinA}*`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
     function ajustarData() {
         const h = new Date();
         document.getElementById('dia').value = String(h.getDate()).padStart(2,'0');
@@ -229,13 +231,6 @@
     }
 
     function deletarItem(k) { if(confirm("Apagar?")) db.ref(`lojas/${loja}/funcionarios/${idA}/dividas/${k}`).remove(); }
-    
-    function copyL() {
-        const link = `${window.location.origin}${window.location.pathname.replace('admin.html','extrato.html')}?loja=${loja}&id=${idA}`;
-        const msg = encodeURIComponent(`Olá ${nomeA}! Seu extrato foi atualizado com o abatimento.\n🔗 ${link}\n\nPIN: *${pinA}*`);
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-    }
-
     function loadShortcuts() {
         const box = document.getElementById('shortcutBox');
         box.innerHTML = shortcuts.map(s => `<button class="tag-btn" onclick="setDesc('${s}')">${s}</button>`).join('') + `<button class="tag-btn" style="background:var(--p);color:var(--a)" onclick="addShortcut()">＋</button>`;
